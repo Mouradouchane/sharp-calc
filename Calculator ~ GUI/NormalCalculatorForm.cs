@@ -149,7 +149,7 @@ namespace Calculator___GUI
                
             }
             catch(Exception error) {
-                MessageBox.Show("Error : " + error);
+                MessageBox.Show(error.ToString(),"Error");
             }
         }
     }

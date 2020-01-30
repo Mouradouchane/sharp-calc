@@ -28,10 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.normalCalculator = new System.Windows.Forms.Button();
             this.programmerCalculator = new System.Windows.Forms.Button();
             this.about = new System.Windows.Forms.Button();
+            this.HiddenInfoMain = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // normalCalculator
@@ -46,6 +48,7 @@
             this.normalCalculator.Size = new System.Drawing.Size(133, 87);
             this.normalCalculator.TabIndex = 0;
             this.normalCalculator.Text = "NORMAL";
+            this.HiddenInfoMain.SetToolTip(this.normalCalculator, "normal calculator");
             this.normalCalculator.UseVisualStyleBackColor = false;
             this.normalCalculator.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -61,6 +64,7 @@
             this.programmerCalculator.Size = new System.Drawing.Size(236, 87);
             this.programmerCalculator.TabIndex = 1;
             this.programmerCalculator.Text = "PROGRAMMER";
+            this.HiddenInfoMain.SetToolTip(this.programmerCalculator, "programmer calculator");
             this.programmerCalculator.UseVisualStyleBackColor = false;
             this.programmerCalculator.Click += new System.EventHandler(this.programmerCalculator_Click);
             // 
@@ -76,8 +80,18 @@
             this.about.Name = "about";
             this.about.Size = new System.Drawing.Size(97, 87);
             this.about.TabIndex = 2;
+            this.HiddenInfoMain.SetToolTip(this.about, "about me !");
             this.about.UseVisualStyleBackColor = false;
             this.about.Click += new System.EventHandler(this.button1_Click_1);
+            // 
+            // HiddenInfoMain
+            // 
+            this.HiddenInfoMain.AutoPopDelay = 5000;
+            this.HiddenInfoMain.InitialDelay = 1000;
+            this.HiddenInfoMain.IsBalloon = true;
+            this.HiddenInfoMain.ReshowDelay = 100;
+            this.HiddenInfoMain.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+            this.HiddenInfoMain.ToolTipTitle = "Info";
             // 
             // MainForm
             // 
@@ -92,7 +106,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "MainForm";
-            this.Text = "Form1";
+            this.Text = "Calc ~ GUI";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Resize += new System.EventHandler(this.fixedSize);
             this.ResumeLayout(false);
@@ -104,6 +118,7 @@
         private System.Windows.Forms.Button normalCalculator;
         private System.Windows.Forms.Button programmerCalculator;
         private System.Windows.Forms.Button about;
+        private System.Windows.Forms.ToolTip HiddenInfoMain;
     }
 }
 

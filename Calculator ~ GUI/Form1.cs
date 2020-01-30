@@ -54,6 +54,9 @@ namespace Calculator___GUI
 
         private void button1_Click_1(object sender, EventArgs e){
 
+            aboutForm aboutFRM = new aboutForm();
+
+            aboutFRM.ShowDialog();
 
         }
     }

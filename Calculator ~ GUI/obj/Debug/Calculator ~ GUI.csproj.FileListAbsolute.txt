@@ -9,3 +9,4 @@ C:\Users\DEVsPART\Desktop\C#\calculatorGUI\Calculator ~ GUI\Calculator ~ GUI\obj
 C:\Users\DEVsPART\Desktop\C#\calculatorGUI\Calculator ~ GUI\Calculator ~ GUI\obj\Debug\Calculator___GUI.MainForm.resources
 C:\Users\DEVsPART\Desktop\C#\calculatorGUI\Calculator ~ GUI\Calculator ~ GUI\obj\Debug\Calculator___GUI.NormalCalculatorForm.resources
 C:\Users\DEVsPART\Desktop\C#\calculatorGUI\Calculator ~ GUI\Calculator ~ GUI\obj\Debug\Calculator___GUI.ProgrammerCalculatorForm.resources
+C:\Users\DEVsPART\Desktop\C#\calculatorGUI\Calculator ~ GUI\Calculator ~ GUI\obj\Debug\Calculator___GUI.aboutForm.resources
