@@ -16,5 +16,25 @@ namespace Calculator___GUI
         {
             InitializeComponent();
         }
+
+        private void githubButton_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/Mouradouchane/CsharpCalculatorGUI");
+
+        }
+
+        private void aboutForm_Resize(object sender, EventArgs e){
+
+            // call fixed size function if user try to resize window
+            fixedSize(sender, e);
+
+        }
+
+        private void fixedSize(object sender, EventArgs e){
+
+            this.Size = new Size(156, 229);
+
+        }
+
     }
 }

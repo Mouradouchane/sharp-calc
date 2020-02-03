@@ -27,12 +27,7 @@ namespace Calculator___GUI
         private void buttonClear_Click(object sender, EventArgs e)
         {
             this.Input.Text = "";
-            this.output.Text = "";
-        }
-
-        private void button10_Click(object sender, EventArgs e)
-        {
-            this.Input.Text += "A";
+            this.output.Text = "output";
         }
 
         private void ProgrammerCalculatorForm_Load(object sender, EventArgs e)
@@ -40,119 +35,122 @@ namespace Calculator___GUI
             this.OperationType.SelectedItem = "Decimal";
         }
 
+        private void button10_Click(object sender, EventArgs e)
+        {
+            if (this.Input.Text.Length <= 15){
+                this.Input.Text += "A";
+            }
+        }
+
         private void button11_Click(object sender, EventArgs e)
         {
-            this.Input.Text += "B";
+            if (this.Input.Text.Length <= 15){
+                this.Input.Text += "B";
+            }
         }
 
         private void button12_Click(object sender, EventArgs e)
         {
-            this.Input.Text += "C";
+            if (this.Input.Text.Length <= 15){
+                this.Input.Text += "C";
+            }
         }
 
         private void button11_Click_1(object sender, EventArgs e)
         {
-            this.Input.Text += "E";
+            if (this.Input.Text.Length <= 15){
+                this.Input.Text += "E";
+            }
         }
 
         private void button10_Click_1(object sender, EventArgs e)
         {
-            this.Input.Text += "F";
-        }
-
-        private void buttonSum_Click(object sender, EventArgs e){
-
-            try {
-
-                // if detected converting to "Octal"
-                if (OperationType.SelectedItem.ToString() == "Octal"){
-                    output.Text = Convert.ToInt32(Input.Text, 8).ToString();
-                }
-                // if detected converting to "HexaDecimal"
-                if (OperationType.SelectedItem.ToString() == "HexaDecimal") {
-                    output.Text = Convert.ToInt32(Input.Text,16).ToString();
-                }
-                // if detected converting to "Decimal"
-                if (OperationType.SelectedItem.ToString() == "Decimal")
-                {
-                    output.Text = Convert.ToInt32(Input.Text).ToString();
-                }
-                // if detected converting to "Binary"
-                if (OperationType.SelectedItem.ToString() == "Binary")
-                {
-                    output.Text = Convert.ToInt32(Input.Text, 2).ToString();
-                }
-
+            if (this.Input.Text.Length <= 15){
+                this.Input.Text += "F";
             }
-            catch (Exception error) {
-                MessageBox.Show("Error :" + error , "Error");
-            }
-
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            this.Input.Text += 1;
+            if (this.Input.Text.Length <= 15){
+                this.Input.Text += 1;
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            this.Input.Text += 2;
+            if (this.Input.Text.Length <= 15){
+                this.Input.Text += 2;
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            this.Input.Text += 3;
+            if (this.Input.Text.Length <= 15){
+                this.Input.Text += 3;
+            }
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            this.Input.Text += 4;
+            if (this.Input.Text.Length <= 15)
+            {
+                this.Input.Text += 4;
+            }
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            this.Input.Text += 5;
+            if (this.Input.Text.Length <= 15){
+                this.Input.Text += 5;
+            }
         }
 
         private void button6_Click(object sender, EventArgs e)
         {
-            this.Input.Text += 6;
+            if (this.Input.Text.Length <= 15){
+                this.Input.Text += 6;
+            }
         }
 
         private void button7_Click(object sender, EventArgs e)
         {
-            this.Input.Text += 7;
+            if (this.Input.Text.Length <= 15)
+            {
+                this.Input.Text += 7;
+            }
         }
 
         private void button8_Click(object sender, EventArgs e)
         {
-            this.Input.Text += 8;
+            if (this.Input.Text.Length <= 15)
+            {
+                this.Input.Text += 8;
+            }
         }
 
         private void button9_Click(object sender, EventArgs e)
         {
-            this.Input.Text += 9;
+            if (this.Input.Text.Length <= 15)
+            {
+                this.Input.Text += 9;
+            }
         }
 
         private void buttonD_Click(object sender, EventArgs e)
         {
-            this.Input.Text += "D";
+            if (this.Input.Text.Length <= 15)
+            {
+                this.Input.Text += "D";
+            }
         }
 
-        private void buttonDot_Click(object sender, EventArgs e)
-        {
-            this.Input.Text += ".";
-        }
 
         private void button0_Click(object sender, EventArgs e)
         {
-            this.Input.Text += 0;
-        }
-
-        private void buttonPlus_Click(object sender, EventArgs e)
-        {
-            this.Input.Text += "+";
+            if(this.Input.Text.Length <= 15){
+                this.Input.Text += 0;
+            }
         }
 
         private void buttonEriser_Click(object sender, EventArgs e){
@@ -264,5 +262,48 @@ namespace Calculator___GUI
             }
 
         }
+
+        private void buttonSum_Click(object sender, EventArgs e)
+        {
+
+            try{
+
+                // define sum varible 
+                ulong sum;
+
+                // if detected converting to "Octal"
+                if (OperationType.SelectedItem.ToString() == "Octal")
+                {
+                    output.Text = Convert.ToInt32(Input.Text, 8).ToString();
+                }
+
+                // if detected converting to "HexaDecimal"
+                if (OperationType.SelectedItem.ToString() == "HexaDecimal")
+                {
+                    sum = Convert.ToUInt64(Input.Text, 16);
+                    output.Text = sum.ToString();
+                }
+
+                // if detected converting to "Decimal"
+                if (OperationType.SelectedItem.ToString() == "Decimal")
+                {
+                    sum = Convert.ToUInt64(Input.Text);
+                    output.Text = sum.ToString();
+                }
+
+                // if detected converting to "Binary"
+                if (OperationType.SelectedItem.ToString() == "Binary")
+                {
+                    output.Text = Convert.ToInt32(Input.Text, 2).ToString();
+                }
+
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show("Error :" + error, "Error");
+            }
+
+        }
+
     }
 }
