@@ -25,7 +25,7 @@ namespace Calculator___GUI
         private void fixedSize(object sender, EventArgs e)
         {
 
-            this.Size = new Size(249, 351);
+            this.Size = new Size(249, 299);
         }
 
         private void button8_Click(object sender, EventArgs e)

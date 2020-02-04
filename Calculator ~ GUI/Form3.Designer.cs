@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(aboutForm));
             this.aboutText = new System.Windows.Forms.Label();
             this.githubButton = new System.Windows.Forms.Button();
             this.name = new System.Windows.Forms.Label();
@@ -37,14 +38,14 @@
             // 
             this.aboutText.AutoSize = true;
             this.aboutText.BackColor = System.Drawing.Color.Transparent;
-            this.aboutText.Font = new System.Drawing.Font("Miriam CLM", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
+            this.aboutText.Font = new System.Drawing.Font("Miriam CLM", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
             this.aboutText.ForeColor = System.Drawing.Color.White;
-            this.aboutText.Location = new System.Drawing.Point(12, 22);
+            this.aboutText.Location = new System.Drawing.Point(11, 47);
             this.aboutText.Name = "aboutText";
-            this.aboutText.Size = new System.Drawing.Size(92, 136);
+            this.aboutText.Size = new System.Drawing.Size(227, 80);
             this.aboutText.TabIndex = 1;
-            this.aboutText.Text = "version 1\r\nbuild (beta 1)\r\nopen source \r\nyou go to the \r\nproject from \r\ngithub bu" +
-    "tton\r\n\r\n\r\n";
+            this.aboutText.Text = "version 1 Free & Open-Source for you \r\ncan go to the project from github \r\nbutton" +
+    " & get your fork \r\n\r\n\r\n";
             // 
             // githubButton
             // 
@@ -54,11 +55,10 @@
             this.githubButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.githubButton.Font = new System.Drawing.Font("Miriam CLM", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
             this.githubButton.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.githubButton.Image = global::Calculator___GUI.Properties.Resources.github1;
             this.githubButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.githubButton.Location = new System.Drawing.Point(15, 130);
+            this.githubButton.Location = new System.Drawing.Point(14, 108);
             this.githubButton.Name = "githubButton";
-            this.githubButton.Size = new System.Drawing.Size(110, 47);
+            this.githubButton.Size = new System.Drawing.Size(224, 47);
             this.githubButton.TabIndex = 2;
             this.githubButton.Text = "Github";
             this.githubButton.UseVisualStyleBackColor = false;
@@ -71,7 +71,7 @@
             this.name.Font = new System.Drawing.Font("DejaVu Sans", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.name.ForeColor = System.Drawing.Color.LawnGreen;
             this.name.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.name.Location = new System.Drawing.Point(12, 7);
+            this.name.Location = new System.Drawing.Point(11, 26);
             this.name.Name = "name";
             this.name.Size = new System.Drawing.Size(106, 15);
             this.name.TabIndex = 3;
@@ -82,10 +82,11 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::Calculator___GUI.Properties.Resources.back;
-            this.ClientSize = new System.Drawing.Size(140, 191);
+            this.ClientSize = new System.Drawing.Size(253, 170);
             this.Controls.Add(this.name);
             this.Controls.Add(this.githubButton);
             this.Controls.Add(this.aboutText);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "aboutForm";
             this.Text = "About";

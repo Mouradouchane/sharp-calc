@@ -356,6 +356,7 @@
             this.output.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
             this.output.Size = new System.Drawing.Size(304, 20);
             this.output.TabIndex = 58;
+            this.output.Text = "output";
             this.HiddenInfo.SetToolTip(this.output, "output value is a decimal !\r\n");
             // 
             // OperationType

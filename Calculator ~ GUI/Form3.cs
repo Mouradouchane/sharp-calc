@@ -32,7 +32,7 @@ namespace Calculator___GUI
 
         private void fixedSize(object sender, EventArgs e){
 
-            this.Size = new Size(156, 229);
+            this.Size = new Size(269, 208);
 
         }
 
