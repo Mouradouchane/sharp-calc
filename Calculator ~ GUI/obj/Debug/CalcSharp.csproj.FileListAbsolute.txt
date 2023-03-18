@@ -1,0 +1,16 @@
+C:\Users\devc\Desktop\cpp\CsharpCalculatorGUI\Calculator ~ GUI\obj\Debug\CalcSharp.csproj.AssemblyReference.cache
+C:\Users\devc\Desktop\cpp\CsharpCalculatorGUI\Calculator ~ GUI\obj\Debug\Calculator___GUI.MainForm.resources
+C:\Users\devc\Desktop\cpp\CsharpCalculatorGUI\Calculator ~ GUI\obj\Debug\Calculator___GUI.ProgrammerCalculatorForm.resources
+C:\Users\devc\Desktop\cpp\CsharpCalculatorGUI\Calculator ~ GUI\obj\Debug\Calculator___GUI.aboutForm.resources
+C:\Users\devc\Desktop\cpp\CsharpCalculatorGUI\Calculator ~ GUI\obj\Debug\Calculator___GUI.NormalModeForm.resources
+C:\Users\devc\Desktop\cpp\CsharpCalculatorGUI\Calculator ~ GUI\obj\Debug\CalcSharp.csproj.GenerateResource.cache
+C:\Users\devc\Desktop\cpp\CsharpCalculatorGUI\Calculator ~ GUI\obj\Debug\CalcSharp.csproj.CoreCompileInputs.cache
+C:\Users\devc\Desktop\cpp\CsharpCalculatorGUI\Calculator ~ GUI\bin\Debug\CalcSharp.exe.config
+C:\Users\devc\Desktop\cpp\CsharpCalculatorGUI\Calculator ~ GUI\bin\Debug\CalcSharp.exe
+C:\Users\devc\Desktop\cpp\CsharpCalculatorGUI\Calculator ~ GUI\bin\Debug\CalcSharp.pdb
+C:\Users\devc\Desktop\cpp\CsharpCalculatorGUI\Calculator ~ GUI\obj\Debug\CalcSharp.Properties.Resources.resources
+C:\Users\devc\Desktop\cpp\CsharpCalculatorGUI\Calculator ~ GUI\obj\Debug\CalcSharp.exe
+C:\Users\devc\Desktop\cpp\CsharpCalculatorGUI\Calculator ~ GUI\obj\Debug\CalcSharp.pdb
+C:\Users\devc\Desktop\cpp\CsharpCalculatorGUI\Debug\CalcSharp.exe.config
+C:\Users\devc\Desktop\cpp\CsharpCalculatorGUI\Debug\CalcSharp.exe
+C:\Users\devc\Desktop\cpp\CsharpCalculatorGUI\Debug\CalcSharp.pdb

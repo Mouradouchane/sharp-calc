@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Calculator___GUI.Properties {
+namespace CalcSharp.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Calculator___GUI.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Calculator___GUI.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CalcSharp.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -66,46 +66,6 @@ namespace Calculator___GUI.Properties {
         internal static System.Drawing.Bitmap back {
             get {
                 object obj = ResourceManager.GetObject("back", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap github {
-            get {
-                object obj = ResourceManager.GetObject("github", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap github1 {
-            get {
-                object obj = ResourceManager.GetObject("github1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap github2 {
-            get {
-                object obj = ResourceManager.GetObject("github2", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap pic {
-            get {
-                object obj = ResourceManager.GetObject("pic", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
