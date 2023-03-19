@@ -1,7 +1,10 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "pch.h"
 
-#include "functions.h"
+#define EXPORT 1
+#include "dllmain.hpp"
+#include "operator.cpp"
+#include "parser.cpp"
 
 BOOL APIENTRY DllMain( HMODULE hModule , DWORD  ul_reason_for_call , LPVOID lpReserved ) {
 

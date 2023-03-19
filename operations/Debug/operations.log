@@ -1,3 +1,5 @@
 ﻿  dllmain.cpp
-     Creating library C:\Users\devc\Desktop\cpp\CsharpCalculatorGUI\Debug\operations.lib and object C:\Users\devc\Desktop\cpp\CsharpCalculatorGUI\Debug\operations.exp
-  operations.vcxproj -> C:\Users\devc\Desktop\cpp\CsharpCalculatorGUI\Debug\operations.dll
+  parser.cpp
+  Generating Code...
+     Creating library C:\Users\devc\Desktop\cpp\CalcSharp\Debug\operations.lib and object C:\Users\devc\Desktop\cpp\CalcSharp\Debug\operations.exp
+  operations.vcxproj -> C:\Users\devc\Desktop\cpp\CalcSharp\Debug\operations.dll
