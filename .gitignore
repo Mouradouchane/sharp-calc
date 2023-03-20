@@ -1,0 +1,9 @@
+testing/*
+Debug/*
+Release/*
+.vs/*
+CalcSharp/bin/*
+CalcSharp/obj/*
+operations/Debug/*
+operations/Release/*
+CalcSharp.exe
