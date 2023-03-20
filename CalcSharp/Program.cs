@@ -7,21 +7,24 @@ using System.Runtime.InteropServices;
 
 namespace Calculator___GUI
 {
+    public static class lib {
+        
+        [ DllImport( "operations.dll" ) ] public static extern int parser_test();
+
+        [DllImport("operations.dll")] public static extern int operator_test();
+    }
+
     static class Program {
-
-        [ DllImport( "operations.dll" ) ]
-        public static extern int parser_test();
-
-        static int parser_value = parser_test();
 
         [STAThread]
 
         static void Main(){
 
+            int parser_value = lib.parser_test();
+            int op_value = lib.operator_test();
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
-     
 
             Application.Run(
                 new MainForm()
