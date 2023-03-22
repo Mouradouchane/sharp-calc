@@ -1,18 +1,16 @@
 
 #pragma once
 
-#if EXPORT
+#define TYPE LPWSTR
 
-	extern "C" __declspec(dllexport) int parser_test();
+// extern "C" __declspec(dllexport) TYPE parse_expression( TYPE );
 
-	extern "C" __declspec(dllexport) int operator_test();
+extern "C" __declspec(dllexport) void parse_expression( TYPE& str_exp ) {
 
-#endif
+	str_exp[0] = L'M';
+	str_exp[1] = L'M';
+	str_exp[2] = L'M';
 
-#if IMPORT 
+	// return expression_string_lenght;
 
-	extern "C" __declspec(dllimport) int parser_test();
-
-	extern "C" __declspec(dllimport) int operator_test();
-
-#endif
+}

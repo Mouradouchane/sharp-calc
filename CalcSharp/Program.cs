@@ -3,15 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Text;
 using System.Runtime.InteropServices;
+
 
 namespace Calculator___GUI
 {
     public static class lib {
         
-        [ DllImport( "operations.dll" ) ] public static extern int parser_test();
+        [DllImport("operations.dll" , CallingConvention = CallingConvention.Cdecl)]
+        public static extern void parse_expression(   
+            [MarshalAs(UnmanagedType.LPWStr)]
+            ref string expression_string_lenght
+        );
 
-        [DllImport("operations.dll")] public static extern int operator_test();
     }
 
     static class Program {
@@ -20,15 +25,16 @@ namespace Calculator___GUI
 
         static void Main(){
 
-            int parser_value = lib.parser_test();
-            int op_value = lib.operator_test();
+            string vl = "this is test value";
+            lib.parse_expression( ref vl );
+
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            Application.Run(
-                new MainForm()
-            );
+            MainForm main = new MainForm();
+            main.Text = vl.ToString();
+            Application.Run( main );
 
         }
     }
