@@ -1,2 +1,2 @@
-# CsharpCalculatorGUI
-a normal calculator &amp; programmer calculator creating by C# &amp; classic window Forms
+# sharpCalc :
+### a calculator with normal-mode and programmer-mode that use C# GUI and C++ for math
