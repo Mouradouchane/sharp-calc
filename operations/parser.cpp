@@ -3,109 +3,88 @@
 
 #include "pch.h"
 
-bool static is_operator(char& ch) {
+#ifndef node
+	#include "node.cpp"
+#endif
+
+static short operator_level(char const& ch) {
 
 	switch (ch) {
 
-	case '+': return true;
-	case '-': return true;
-	case '/': return true;
-	case '%': return true;
-	case '*': return true;
+		case '+': case '-': return 1;
+	
+		case '/': case '%': case '*': case '^': return 2;
+	
+		case '(': case ')': return 3;
+	
+
+		default: return 6;
+
+	}
+
+}
+
+static bool is_operator( char const& ch ) {
+
+	switch (ch) {
+
+		case '+': case '-': {
+			return true;
+		}
+
+		case '/': case '%': case '*': case '^' : {
+			return true;
+		} 
+
+		case '(': case ')': {
+			return true;
+		}
 
 	}
 
 	return false;
 }
 
-class expression {
 
-	public:
-		std::string str;
+static bool is_valid_expression(std::string const& math_expression) {
 
-		expression(std::string math_expression_as_string) {
+	int32_t balance = 0;
+	bool last_char_operator = false;
 
-			this->str = std::string(math_expression_as_string);
+	for (uint32_t i = 0; i < math_expression.size(); i++) {
 
+		if (math_expression[i] == '(') {
+			balance++;
+			continue;
 		}
 
-		expression(const char* math_expression_as_cstring) {
-			this->str = math_expression_as_cstring;
-		}
-
-		expression() {
-
-		}
-
-	/*
-	static bool is_valid_expression(expression const& expression_object);
-	static void parse_expression(expression& expression_object);
-	*/
-
-	static bool is_valid_expression(expression const& expression_object) {
-
-		int32_t balance = 0;
-
-		for (uint32_t i = 0; i < expression_object.str.size(); i++) {
-
-			if (expression_object.str[i] == '(') {
-				balance++;
-				continue;
-			}
-
-			if (expression_object.str[i] == ')') {
-				balance--;
-				continue;
-			}
-
-		}
-
-		return (balance == 0) ? true : false;
-
-	}
-
-	static void parse_expression(expression& expression_object) {
-
-		std::vector< std::string > sub_expressions;
-
-		long int balance = 0;
-		size_t s = 0;
-
-		// parsing 
-		for (size_t i = 1; i < expression_object.str.size(); i++) {
-
-			// keep track of ( ) for ideal parsing
-
-			if (expression_object.str[i] == '(') {
-				balance++;
-				continue;
-			}
-
-			if (expression_object.str[i] == ')') {
-				balance--;
-				continue;
-			}
-
-			if (balance == 0 && is_operator(expression_object.str[i])) {
-				sub_expressions.push_back(
-					expression_object.str.substr(s, i - s)
-				);
-				s = i;
-			}
-
-		}
-
-		sub_expressions.push_back(
-			expression_object.str.substr(s, expression_object.str.size() - s)
-		);
-
-		for (std::string& exp : sub_expressions) {
-
-			std::cout << exp << '\n';
-
+		if (math_expression[i] == ')') {
+			balance--;
+			continue;
 		}
 
 	}
-};
 
+	return (balance == 0) ? true : false;
+
+}
+
+static void parse_expression( node& expression_node ) {
+	
+	short  last_op_level = 6;
+	size_t last_op_index = 0;
+
+	short current_op_level = 6;
+	for (size_t i = 0; i < expression_node.value.size(); i++ ) {
+
+		current_op_level = operator_level(expression_node.value[i]);
+
+		if ( current_op_level <= last_op_level ) {
+			last_op_level = current_op_level;
+			last_op_index = i;
+		}
+
+	}
+
+}
 
