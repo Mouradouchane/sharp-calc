@@ -157,6 +157,7 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="node.cpp" />
     <ClCompile Include="math.cpp" />
     <ClCompile Include="interface.cpp" />
     <ClCompile Include="pch.cpp">
