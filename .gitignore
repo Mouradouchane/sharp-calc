@@ -6,4 +6,4 @@ CalcSharp/bin/*
 CalcSharp/obj/*
 mathlib/Debug/*
 mathlib/Release/*
-CalcSharp.sln
+sharp-calc.sln
