@@ -4,6 +4,6 @@ Release/*
 .vs/*
 CalcSharp/bin/*
 CalcSharp/obj/*
-operations/Debug/*
-operations/Release/*
-CalcSharp.exe
+mathlib/Debug/*
+mathlib/Release/*
+CalcSharp.sln
