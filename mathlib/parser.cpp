@@ -34,8 +34,7 @@ static short operator_level(char const& ch) {
 		case '(': case ')': return 3;
 	
 
-		default: return 6;
-
+		default: return 9;
 	}
 
 }
@@ -44,23 +43,46 @@ static bool is_operator(char const& ch) {
 
 	switch (ch) {
 
-	case '+': case '-': {
-		return true;
-	}
-
-	case '/': case '%': case '*': case '^': {
-		return true;
-	}
+		case '+': case '-': case '/': case '%': case '*': case '^': {
+			return true;
+		}
 
 	}
 
 	return false;
 }
 
+static bool is_variable(std::string const& target_name) {
+	return false;
+}
+
+static bool is_function(std::string const& target_name) {
+	return false;
+}
+
+static bool is_int(std::string const& target_name ) {
+	return false;
+}
+
+static bool is_float(std::string const& target_name) {
+	return false;
+}
+
+static std::string define_this(std::string const& undefiend_value) {
+
+	if (is_variable(undefiend_value))	return std::string("variable");
+	if (is_function(undefiend_value))	return std::string("function");
+	if (is_int(undefiend_value))		return std::string("int");
+	if (is_float(undefiend_value))		return std::string("float");
+	if (is_operator(undefiend_value[0]))return std::string("operator");
+
+	return std::string("undefined");
+}
+
 /*
 	function for check/analyse math expression before starting operations
 */
-static expression_info check_expression(std::string const& math_expression ) {
+static expression_info check_expression( std::string const& math_expression ) {
 	
 	expression_info result;
 
@@ -101,7 +123,7 @@ static expression_info check_expression(std::string const& math_expression ) {
 			end = i - 1;
 
 			// todo : check what's in between "start & end"
-			std::string str = math_expression.substr( start , end );
+			std::string str = math_expression.substr( start , ( end - start ) + 1);
 
 			// todo : check for undefined's
 
@@ -143,7 +165,7 @@ static void parse_expression( node& expression_node ) {
 	bool preforme_parse = false;
 
 	// to keep track the last low operator precedence
-	short  last_op_level = 6;
+	short  last_op_level = 4;
 	size_t last_op_index = 0;
 
 	// search for last low operator to parse depend on it
@@ -167,18 +189,26 @@ static void parse_expression( node& expression_node ) {
 
 	// parse the expression based on the last lowest operator found
 	if (preforme_parse) {
-		expression_node.left  = new node(expression_node.value.substr(0, last_op_index - 1));
+
+		expression_node.left  = new node(
+			expression_node.value.substr(0, last_op_index )
+		);
+
 		expression_node.right = new node( 
-			expression_node.value.substr( last_op_index + 1 , expression_node.value.size() ) 
+			expression_node.value.substr( last_op_index + 1 , expression_node.value.size() - last_op_index ) 
 		);
 
 		expression_node.value = expression_node.value[last_op_index];
-		expression_node.type = "op";
-	}
+		expression_node.type  = define_this( expression_node.value );
 
-	// go to left and right nodes
-	parse_expression( *expression_node.left  );
-	parse_expression( *expression_node.right );
+		/*
+			after this parsing expression into tow parts
+			go parse those new "sub expressions"
+		*/
+		parse_expression( *expression_node.left  );
+		parse_expression( *expression_node.right );
+
+	}
 
 }
 
