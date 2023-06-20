@@ -11,15 +11,18 @@
 struct expression_info {
 	
 	public : 
-		bool is_valid = false;
-		bool is_it_bracket_expression = false;
 
-		bool is_contain_subexpressions = false;
-		bool is_contain_variables = false;
-		bool is_contain_functions = false;
+		// exceptions ==============================
+		bool invalid_expression_exception	= false;
+		bool bracket_bracket_exception		= false;
+		bool operator_operator_exception	= false;
+		bool undefined_exception			= false;
+		bool divison_by_zero				= false;
 
-		bool is_something_undefined = false;
-		bool operator_operator = false;
+		// info ====================================
+		bool contain_subexpressions			= false;
+		bool contain_variables				= false;
+		bool contain_functions				= false;
 
 };
 
@@ -102,17 +105,26 @@ static expression_info check_expression( std::string const& math_expression ) {
 
 		// sub expression leave
 		if (math_expression[i] == ')') {
+
 			brackets_balance--;
+
+			// if ) followed by ( that's mean invalid expression
+			if (math_expression[i + 1] == '(') {
+				result.invalid_expression_exception = false;
+				result.bracket_bracket_exception = true;
+				return result;
+			}
+
 		}
 
 		// if operator followed by operator or operator followed by ')' that's mean "invalid expression" 
 		if ( 
 			is_operator(math_expression[i]) && 
-			( is_operator(math_expression[i-1]) | math_expression[i + 1] == ')' )
+			( is_operator(math_expression[i + 1]) | math_expression[i + 1] == ')' )
 		) {
 
-			result.is_valid = false;
-			result.operator_operator = true;
+			result.invalid_expression_exception = false;
+			result.operator_operator_exception = true;
 
 			return result;
 		}
@@ -134,13 +146,13 @@ static expression_info check_expression( std::string const& math_expression ) {
 	}
 
 	//  brackets_balance == 0 : mean this expression is valid/balanced on brackets level
-	if (brackets_balance == 0) result.is_valid = true;
+	if (brackets_balance == 0) result.invalid_expression_exception = true;
 
 	return result;
 
 }
 
-static void get_sub_expression_end( std::string & expression , size_t & index ) {
+static void pass_sub_expression( std::string & expression , size_t & index ) {
 
 	INT32 balance = 1;
 
@@ -153,7 +165,10 @@ static void get_sub_expression_end( std::string & expression , size_t & index ) 
 			balance-- ;
 
 			// balance == 0 with ')' mean we find the end of this sub-expression
-			if ( balance == 0 ) break; 
+			if (balance == 0) {
+				index += 1;
+				return;
+			}
 		}
 
 	}
@@ -173,7 +188,19 @@ static void parse_expression( node& expression_node ) {
 	for (size_t i = 0; i < expression_node.value.size(); i++ ) {
 
 		if ( expression_node.value[i] == '(' ) {
-			get_sub_expression_end(expression_node.value , i);
+			bool all_inside = ( i == 0 ) ? true : false;
+
+			pass_sub_expression(expression_node.value , i);
+
+			if (i == expression_node.value.length() && all_inside) {
+				expression_node.value = expression_node.value.substr(
+					1, expression_node.value.length() - 2
+				);
+
+				parse_expression(expression_node);
+				return;
+			}
+
 		}
 
 		current_op_level = operator_level(expression_node.value[i]);
@@ -190,13 +217,21 @@ static void parse_expression( node& expression_node ) {
 	// parse the expression based on the last lowest operator found
 	if (preforme_parse) {
 
-		expression_node.left  = new node(
-			expression_node.value.substr(0, last_op_index )
-		);
+		if (last_op_index > 0) {
 
-		expression_node.right = new node( 
-			expression_node.value.substr( last_op_index + 1 , expression_node.value.size() - last_op_index ) 
-		);
+			expression_node.left  = new node(
+				expression_node.value.substr(0, last_op_index )
+			);
+
+		}
+
+		if (last_op_index < expression_node.value.length()) {
+
+			expression_node.right = new node( 
+				expression_node.value.substr( last_op_index + 1 , expression_node.value.size() - last_op_index ) 
+			);
+
+		}
 
 		expression_node.value = expression_node.value[last_op_index];
 		expression_node.type  = define_this( expression_node.value );
@@ -205,8 +240,8 @@ static void parse_expression( node& expression_node ) {
 			after this parsing expression into tow parts
 			go parse those new "sub expressions"
 		*/
-		parse_expression( *expression_node.left  );
-		parse_expression( *expression_node.right );
+		if( expression_node.left  != nullptr ) parse_expression( *expression_node.left );
+		if( expression_node.right != nullptr ) parse_expression( *expression_node.right );
 
 	}
 
