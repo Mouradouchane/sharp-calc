@@ -7,6 +7,11 @@
 	#include "node.cpp"
 #endif
 
+
+#ifndef defs
+	#include "defs.hpp"
+#endif
+
 // simple structure who hold a few information about "math_expressions" 
 struct expression_info {
 	
@@ -30,14 +35,14 @@ static short operator_level(char const& ch) {
 
 	switch (ch) {
 
-		case '+': case '-': return 1;
+		case '+': case '-': return LEVEL_1;
 	
-		case '/': case '%': case '*': case '^': return 2;
+		case '/': case '%': case '*': case '^': return LEVEL_2;
 	
-		case '(': case ')': return 3;
+		case '(': case ')': return LEVEL_3;
 	
 
-		default: return 9;
+		default: return LEVEL_MAX;
 	}
 
 }
@@ -56,6 +61,13 @@ static bool is_operator(char const& ch) {
 }
 
 static bool is_variable(std::string const& target_name) {
+
+	if ( !isalpha(target_name[0]) ) return false;
+
+	for( size_t i = 1 ; i < target_name.size() ; i++ ){
+		
+	}
+
 	return false;
 }
 
@@ -64,22 +76,47 @@ static bool is_function(std::string const& target_name) {
 }
 
 static bool is_int(std::string const& target_name ) {
-	return false;
+
+	int value = 0;
+	for (size_t i = 0; i < target_name.size(); i++) {
+
+		value = int( target_name[i] - '0' );
+		if (value < 0 || value > 9) return false;
+
+	}
+
+	return true;
 }
 
 static bool is_float(std::string const& target_name) {
+
+	for (size_t i = 0; i < target_name.size(); i++) {
+
+		if (target_name[i] == '.') {
+		
+			return (
+				(i > 0) ? is_int(target_name.substr(0, i)) : true
+				&&
+				(i < target_name.length()) ? is_int(target_name.substr(i + 1, target_name.size() - i)) : true
+			);
+
+		}
+
+	}
+
 	return false;
 }
 
-static std::string define_this(std::string const& undefiend_value) {
+static short define_this(std::string const& undefined_value) {
 
-	if (is_variable(undefiend_value))	return std::string("variable");
-	if (is_function(undefiend_value))	return std::string("function");
-	if (is_int(undefiend_value))		return std::string("int");
-	if (is_float(undefiend_value))		return std::string("float");
-	if (is_operator(undefiend_value[0]))return std::string("operator");
+	if (is_operator(undefined_value[0]))return OPERATOR;
+	if (is_int(undefined_value))		return INT;
+	if (is_float(undefined_value))		return FLOAT;
+	if (is_variable(undefined_value))	return VARIABLE;
+	if (is_function(undefined_value))	return FUNCTION;
 
-	return std::string("undefined");
+	return UNDEFINED;
+	return UNDEFINED;
 }
 
 /*
@@ -89,8 +126,9 @@ static expression_info check_expression( std::string const& math_expression ) {
 	
 	expression_info result;
 
-	// for keep track the brackets balance to see if the expression is valid or not
-	int32_t brackets_balance = 0;
+	// to keep track the brackets balance to see if the expression is valid or not
+	int32_t expression_brackets_balance = 0;
+	int32_t functions_brackets_balance = 0;
 
 	// to get the start/end index of something between operators in expression
 	size_t start = 0;
@@ -100,17 +138,35 @@ static expression_info check_expression( std::string const& math_expression ) {
 
 		// sub expression enter
 		if (math_expression[i] == '(') {
-			brackets_balance++;
+			expression_brackets_balance++;
 		}
+
 
 		// sub expression leave
 		if (math_expression[i] == ')') {
 
-			brackets_balance--;
+			expression_brackets_balance--;
 
 			// if ) followed by ( that's mean invalid expression
 			if (math_expression[i + 1] == '(') {
-				result.invalid_expression_exception = false;
+				result.invalid_expression_exception = true;
+				result.bracket_bracket_exception = true;
+				return result;
+			}
+
+		}
+
+		// function enter
+		if (math_expression[i] == '{') {
+			functions_brackets_balance++;
+		}
+
+		// function leave
+		if (math_expression[i] == '}') {
+			functions_brackets_balance--;
+
+			if (math_expression[i + 1] == '{') {
+				result.invalid_expression_exception = true;
 				result.bracket_bracket_exception = true;
 				return result;
 			}
@@ -123,8 +179,8 @@ static expression_info check_expression( std::string const& math_expression ) {
 			( is_operator(math_expression[i + 1]) | math_expression[i + 1] == ')' )
 		) {
 
-			result.invalid_expression_exception = false;
-			result.operator_operator_exception = true;
+			result.invalid_expression_exception = true;
+			result.operator_operator_exception  = true;
 
 			return result;
 		}
@@ -134,23 +190,37 @@ static expression_info check_expression( std::string const& math_expression ) {
 		) {
 			end = i - 1;
 
-			// todo : check what's in between "start & end"
+			// check for undefined's 
+
 			std::string str = math_expression.substr( start , ( end - start ) + 1);
 
-			// todo : check for undefined's
+			short type = define_this(str);
 
+			if (type == UNDEFINED) {
+				result.invalid_expression_exception = true;
+				result.undefined_exception = true;
 
+				return result;
+			}
+
+			if (type == VARIABLE) result.contain_variables = true;
+			if (type == FUNCTION) result.contain_functions = true;
+			
 			start = i + 1;
 		}
 
 	}
 
-	//  brackets_balance == 0 : mean this expression is valid/balanced on brackets level
-	if (brackets_balance == 0) result.invalid_expression_exception = true;
+	// brackets_balance == 0 : mean expression is "valid/balanced" on brackets level
+	if ( expression_brackets_balance != 0 || functions_brackets_balance != 0 ) {
+		result.invalid_expression_exception = true;
+		result.bracket_bracket_exception = true;
+	}
 
 	return result;
 
-}
+} // end of check_expression function
+
 
 static void pass_sub_expression( std::string & expression , size_t & index ) {
 
@@ -173,7 +243,8 @@ static void pass_sub_expression( std::string & expression , size_t & index ) {
 
 	}
 
-}
+} // end of pass_sub_expression function
+
 
 static void parse_expression( node& expression_node ) {
 
@@ -217,33 +288,34 @@ static void parse_expression( node& expression_node ) {
 	// parse the expression based on the last lowest operator found
 	if (preforme_parse) {
 
-		if (last_op_index > 0) {
+		expression_node.left  = new node(
+			(last_op_index > 0) ? expression_node.value.substr(0, last_op_index ) : "0" ,
+			(last_op_index > 0) ? UNDEFINED : INT
+		);
 
-			expression_node.left  = new node(
-				expression_node.value.substr(0, last_op_index )
-			);
 
-		}
+		expression_node.right = new node( 
+			(last_op_index < expression_node.value.length()) ? expression_node.value.substr( 
+				last_op_index + 1 , expression_node.value.size() - last_op_index 
+			) : "0" ,
+			(last_op_index > 0) ? UNDEFINED : INT
+		);
 
-		if (last_op_index < expression_node.value.length()) {
-
-			expression_node.right = new node( 
-				expression_node.value.substr( last_op_index + 1 , expression_node.value.size() - last_op_index ) 
-			);
-
-		}
-
+		// update current value at the current node
 		expression_node.value = expression_node.value[last_op_index];
-		expression_node.type  = define_this( expression_node.value );
-
+		
 		/*
-			after this parsing expression into tow parts
-			go parse those new "sub expressions"
+			after parsing the expression into tow sub_expressions
+			now we preforme "parse+check" for both new "sub_expressions"
 		*/
 		if( expression_node.left  != nullptr ) parse_expression( *expression_node.left );
 		if( expression_node.right != nullptr ) parse_expression( *expression_node.right );
 
 	}
 
-}
+		// try to identifiy the current value in this node "int,float,variable,...."
+		expression_node.type = define_this(expression_node.value);
+
+
+} // end of parse_expressionn function
 

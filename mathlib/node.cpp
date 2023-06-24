@@ -7,6 +7,9 @@
 	#include <string>
 #endif
 
+#ifndef defs
+	#include "defs.hpp"
+#endif
 
 /*
 	NOTE !!!!!
@@ -20,7 +23,7 @@ class node {
 		bool is_empty = true;
 
 		// type of this value : expression/operator/value/variable...
-		std::string type = "undefiend"; 
+		short type = UNDEFINED; 
 
 		std::string value = "";
 
@@ -31,13 +34,19 @@ class node {
 
 		node() { }
 
+		node(std::string const& math_expression , short const& expression_type ) {
+
+			this->is_empty = false;
+			this->value = math_expression;
+			this->type  = expression_type;
+		}
+
 		node(std::string const& math_expression) {
 
 			this->is_empty = false;
 			this->value = math_expression;
 
 		}
-
 
 		// destructor
 		~node() {
