@@ -3,14 +3,25 @@
 
 #include "pch.h"
 
+#ifndef defs
+	#include "defs.hpp"
+#endif
+
 #ifndef node
 	#include "node.cpp"
 #endif
 
-
-#ifndef defs
-	#include "defs.hpp"
+#ifndef storage
+	#include "storage.hpp"
 #endif
+
+#ifndef analysing
+	#include "analysing.cpp"
+#endif
+
+// where the variables and functions get stored
+extern std::map<std::string, std::string> variables;
+extern std::map<std::string, std::string> functions;
 
 // simple structure who hold a few information about "math_expressions" 
 struct expression_info {
@@ -31,81 +42,6 @@ struct expression_info {
 
 };
 
-static short operator_level(char const& ch) {
-
-	switch (ch) {
-
-		case '+': case '-': return LEVEL_1;
-	
-		case '/': case '%': case '*': case '^': return LEVEL_2;
-	
-		case '(': case ')': return LEVEL_3;
-	
-
-		default: return LEVEL_MAX;
-	}
-
-}
-
-static bool is_operator(char const& ch) {
-
-	switch (ch) {
-
-		case '+': case '-': case '/': case '%': case '*': case '^': {
-			return true;
-		}
-
-	}
-
-	return false;
-}
-
-static bool is_variable(std::string const& target_name) {
-
-	if ( !isalpha(target_name[0]) ) return false;
-
-	for( size_t i = 1 ; i < target_name.size() ; i++ ){
-		
-	}
-
-	return false;
-}
-
-static bool is_function(std::string const& target_name) {
-	return false;
-}
-
-static bool is_int(std::string const& target_name ) {
-
-	int value = 0;
-	for (size_t i = 0; i < target_name.size(); i++) {
-
-		value = int( target_name[i] - '0' );
-		if (value < 0 || value > 9) return false;
-
-	}
-
-	return true;
-}
-
-static bool is_float(std::string const& target_name) {
-
-	for (size_t i = 0; i < target_name.size(); i++) {
-
-		if (target_name[i] == '.') {
-		
-			return (
-				(i > 0) ? is_int(target_name.substr(0, i)) : true
-				&&
-				(i < target_name.length()) ? is_int(target_name.substr(i + 1, target_name.size() - i)) : true
-			);
-
-		}
-
-	}
-
-	return false;
-}
 
 static short define_this(std::string const& undefined_value) {
 
@@ -120,7 +56,8 @@ static short define_this(std::string const& undefined_value) {
 }
 
 /*
-	function for check/analyse math expression before starting operations
+	function for "check/analyse" the "math expression" to make sure that
+	everything is ok "before start parsing or operate" on it .
 */
 static expression_info check_expression( std::string const& math_expression ) {
 	
@@ -133,12 +70,14 @@ static expression_info check_expression( std::string const& math_expression ) {
 	// to get the start/end index of something between operators in expression
 	size_t start = 0;
 	size_t end = 0;
+	bool check_range = false;
 
 	for (uint32_t i = 0; i < math_expression.size(); i++) {
 
 		// sub expression enter
 		if (math_expression[i] == '(') {
 			expression_brackets_balance++;
+			check_range = true;
 		}
 
 
@@ -146,6 +85,7 @@ static expression_info check_expression( std::string const& math_expression ) {
 		if (math_expression[i] == ')') {
 
 			expression_brackets_balance--;
+			check_range = true;
 
 			// if ) followed by ( that's mean invalid expression
 			if (math_expression[i + 1] == '(') {
@@ -159,12 +99,16 @@ static expression_info check_expression( std::string const& math_expression ) {
 		// function enter
 		if (math_expression[i] == '{') {
 			functions_brackets_balance++;
+			check_range = true;
 		}
 
 		// function leave
 		if (math_expression[i] == '}') {
-			functions_brackets_balance--;
 
+			functions_brackets_balance--;
+			check_range = true;
+
+			// if } followed by { that's mean invalid expression
 			if (math_expression[i + 1] == '{') {
 				result.invalid_expression_exception = true;
 				result.bracket_bracket_exception = true;
@@ -176,7 +120,7 @@ static expression_info check_expression( std::string const& math_expression ) {
 		// if operator followed by operator or operator followed by ')' that's mean "invalid expression" 
 		if ( 
 			is_operator(math_expression[i]) && 
-			( is_operator(math_expression[i + 1]) | math_expression[i + 1] == ')' )
+			( is_operator(math_expression[i + 1] ) | math_expression[i + 1] == ')' )
 		) {
 
 			result.invalid_expression_exception = true;
@@ -185,17 +129,17 @@ static expression_info check_expression( std::string const& math_expression ) {
 			return result;
 		}
 
-		if ( 
-			is_operator(math_expression[i]) || math_expression[i] == '(' || math_expression[i] == ')'
-		) {
+		if ( is_operator(math_expression[i]) || check_range ) {
+
 			end = i - 1;
 
-			// check for undefined's 
+			// take a copy of that sub expression in that range 
+			std::string sub_expression = math_expression.substr( start , ( end - start ) + 1);
 
-			std::string str = math_expression.substr( start , ( end - start ) + 1);
+			// check and try to define what that "sub expression" is !!!
+			short type = define_this(sub_expression);
 
-			short type = define_this(str);
-
+			// if that "sub expression" is undefined that mean the hole math expression are "invalid"
 			if (type == UNDEFINED) {
 				result.invalid_expression_exception = true;
 				result.undefined_exception = true;
@@ -209,9 +153,10 @@ static expression_info check_expression( std::string const& math_expression ) {
 			start = i + 1;
 		}
 
+		check_range = false;
 	}
 
-	// brackets_balance == 0 : mean expression is "valid/balanced" on brackets level
+	// brackets_balance not equal to zero , mean this expression not a valid expression
 	if ( expression_brackets_balance != 0 || functions_brackets_balance != 0 ) {
 		result.invalid_expression_exception = true;
 		result.bracket_bracket_exception = true;

@@ -1,11 +1,28 @@
 
 #pragma once
 
-#include "pch.h"
-#include "node.cpp"
-#include "parser.cpp"
+#define DEBUG
 
-#define DEBUG 1
+#include "pch.h"
+
+#ifndef node
+	#include "node.cpp"
+#endif
+
+#ifndef parser
+	#include "parser.cpp"
+#endif
+
+#ifndef storage
+	#include "storage.hpp"
+#endif
+
+// where the variables and functions get stored
+extern std::map<std::string, std::string> variables;
+extern std::map<std::string, std::string> functions;
+
+
+#ifdef DEBUG 
 
 const char* names[] = {
 	"UNDEFINED",
@@ -16,8 +33,7 @@ const char* names[] = {
 	"OPERATOR"
 };
 
-#ifdef DEBUG 
-
+// function for debug/check's only 
 static void print_parsed_expression(node& expression_node , size_t tab = 1) {
 
 	if( expression_node.right != nullptr ) print_parsed_expression(*expression_node.right, tab + tab);
@@ -43,7 +59,7 @@ extern "C" __declspec(dllexport) std::string process_expression(std::string math
 
 	parse_expression( root );
 
-	#ifdef  DEBUG 
+	#ifdef DEBUG
 
 		std::cout << "=================================\n";
 		print_parsed_expression(root , 1);
@@ -56,8 +72,30 @@ extern "C" __declspec(dllexport) std::string process_expression(std::string math
 
 extern "C" __declspec(dllexport) void make_int(std::string int_name, std::string int_value) {
 
+	// check variable name
+
+	// store variable if valid
+	variables.insert(int_name, int_value);
+
 }
 
 extern "C" __declspec(dllexport) void make_float(std::string float_name, std::string float_value) {
+	
+	// check variable name
+
+	// store variable if valid
+	variables.insert(float_name, float_value);
+
+}
+
+extern "C" __declspec(dllexport) void make_function(
+	std::string function_name , 
+	std::string function_expression 
+) {
+
+	// check function name
+
+	// store function if valid
+	functions.insert(function_name, function_expression);
 
 }
