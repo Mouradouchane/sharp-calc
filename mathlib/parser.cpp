@@ -2,29 +2,10 @@
 #pragma once
 
 #include "pch.h"
-
-#ifndef defs
-	#include "defs.hpp"
-#endif
-
-#ifndef node
-	#include "node.cpp"
-#endif
-
-#ifndef storage
-	#include "storage.hpp"
-#endif
-
-#ifndef analysing
-	#include "analysing.cpp"
-#endif
-
-// where the variables and functions get stored
-extern std::map<std::string, std::string> variables;
-extern std::map<std::string, std::string> functions;
+#include "framework.h"
 
 // simple structure who hold a few information about "math_expressions" 
-struct expression_info {
+class expression_info {
 	
 	public : 
 
@@ -42,7 +23,10 @@ struct expression_info {
 
 };
 
-
+/*
+	function that use multiple functions from "analysing.cpp" 
+	to identify the shape of the value in string
+*/
 static short define_this(std::string const& undefined_value) {
 
 	if (is_operator(undefined_value[0]))return OPERATOR;
@@ -52,14 +36,39 @@ static short define_this(std::string const& undefined_value) {
 	if (is_function(undefined_value))	return FUNCTION;
 
 	return UNDEFINED;
-	return UNDEFINED;
 }
+
+static void pass_sub_expression( std::string & expression , size_t & index ) {
+
+	INT32 balance = 1;
+
+	index += 1;
+	for (		; index < expression.size() ; index += 1 ) {
+
+		if (expression[index] == '(') balance++ ;
+
+		if (expression[index] == ')') {
+			balance-- ;
+
+			// balance == 0 with ')' mean we find the end of this sub-expression
+			if (balance == 0) {
+				index += 1;
+				return;
+			}
+		}
+
+	}
+
+} // end of pass_sub_expression function
 
 /*
 	function for "check/analyse" the "math expression" to make sure that
 	everything is ok "before start parsing or operate" on it .
 */
-static expression_info check_expression( std::string const& math_expression ) {
+/*
+	todo : fix "function cant catch last var name" bug !!!!!!!!!!!!
+*/
+expression_info check_expression( std::string const& math_expression ) {
 	
 	expression_info result;
 
@@ -79,7 +88,6 @@ static expression_info check_expression( std::string const& math_expression ) {
 			expression_brackets_balance++;
 			check_range = true;
 		}
-
 
 		// sub expression leave
 		if (math_expression[i] == ')') {
@@ -120,7 +128,7 @@ static expression_info check_expression( std::string const& math_expression ) {
 		// if operator followed by operator or operator followed by ')' that's mean "invalid expression" 
 		if ( 
 			is_operator(math_expression[i]) && 
-			( is_operator(math_expression[i + 1] ) | math_expression[i + 1] == ')' )
+			( is_operator(math_expression[i + 1] ) | (math_expression[i + 1] == ')') )
 		) {
 
 			result.invalid_expression_exception = true;
@@ -167,31 +175,7 @@ static expression_info check_expression( std::string const& math_expression ) {
 } // end of check_expression function
 
 
-static void pass_sub_expression( std::string & expression , size_t & index ) {
-
-	INT32 balance = 1;
-
-	index += 1;
-	for (		; index < expression.size() ; index += 1 ) {
-
-		if (expression[index] == '(') balance++ ;
-
-		if (expression[index] == ')') {
-			balance-- ;
-
-			// balance == 0 with ')' mean we find the end of this sub-expression
-			if (balance == 0) {
-				index += 1;
-				return;
-			}
-		}
-
-	}
-
-} // end of pass_sub_expression function
-
-
-static void parse_expression( node& expression_node ) {
+void parse_expression( node& expression_node ) {
 
 	bool preforme_parse = false;
 

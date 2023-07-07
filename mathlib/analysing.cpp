@@ -1,24 +1,25 @@
 
-#ifndef defs
-	#include "defs.hpp"
-#endif
+#pragma once 
+#include "pch.h"
+#include "framework.h"
 
-#ifndef string
-	#include <string>
-#endif
+/*
+std::map<std::string, var>  variables;
+std::map<std::string, func> functions;
+*/
 
 short operator_level(char const& ch) {
 
 	switch (ch) {
 
-	case '+': case '-': return LEVEL_1;
+		case '+': case '-': return LEVEL_1;
 
-	case '/': case '%': case '*': case '^': return LEVEL_2;
+		case '/': case '%': case '*': case '^': return LEVEL_2;
 
-	case '(': case ')': return LEVEL_3;
+		case '(': case ')': return LEVEL_3;
 
 
-	default: return LEVEL_MAX;
+		default: return LEVEL_MAX;
 	}
 
 }
@@ -27,9 +28,9 @@ bool is_operator(char const& ch) {
 
 	switch (ch) {
 
-	case '+': case '-': case '/': case '%': case '*': case '^': {
-		return true;
-	}
+		case '+': case '-': case '/': case '%': case '*': case '^': {
+			return true;
+		}
 
 	}
 
@@ -38,17 +39,16 @@ bool is_operator(char const& ch) {
 
 bool is_variable(std::string const& target_name) {
 
-	if (!isalpha(target_name[0])) return false;
+	// search in variables map 
+	return (variables.count(target_name) > 0 ) ? FOUND : VAR_NOT_FOUND;
 
-	for (size_t i = 1; i < target_name.size(); i++) {
-
-	}
-
-	return false;
 }
 
 bool is_function(std::string const& target_name) {
-	return false;
+
+	// search in functions map 
+	return ( functions.count( target_name ) > 0) ? FOUND : FUNCTION_NOT_FOUND;
+
 }
 
 bool is_int(std::string const& target_name) {
@@ -74,7 +74,7 @@ static bool is_float(std::string const& target_name) {
 				(i > 0) ? is_int(target_name.substr(0, i)) : true
 				&&
 				(i < target_name.length()) ? is_int(target_name.substr(i + 1, target_name.size() - i)) : true
-				);
+			);
 
 		}
 

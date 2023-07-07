@@ -1,33 +1,15 @@
 
 #pragma once
 
-#define DEBUG
-
 #include "pch.h"
-
-#ifndef node
-	#include "node.cpp"
-#endif
-
-#ifndef parser
-	#include "parser.cpp"
-#endif
-
-#ifndef storage
-	#include "storage.hpp"
-#endif
-
-// where the variables and functions get stored
-extern std::map<std::string, std::string> variables;
-extern std::map<std::string, std::string> functions;
-
-
-#ifdef DEBUG 
+#include "framework.h"
 
 const char* names[] = {
 	"UNDEFINED",
 	"INT",
+	"UINT",
 	"FLOAT",
+	"UFLOAT",
 	"VARIABLE ",
 	"FUNCTION",
 	"OPERATOR"
@@ -47,8 +29,6 @@ static void print_parsed_expression(node& expression_node , size_t tab = 1) {
 
 }
 
-#endif
-
 extern "C" __declspec(dllexport) std::string process_expression(std::string math_expression) {
 
 	expression_info check = check_expression(math_expression);
@@ -59,43 +39,66 @@ extern "C" __declspec(dllexport) std::string process_expression(std::string math
 
 	parse_expression( root );
 
-	#ifdef DEBUG
-
-		std::cout << "=================================\n";
-		print_parsed_expression(root , 1);
-		std::cout << "=================================\n";
-
-	#endif 
+	std::cout << "============== PARSE ===============\n";
+	print_parsed_expression(root , 1);
+	std::cout << "============== E N D ==================\n";
 
 	return std::string("");
 }
 
-extern "C" __declspec(dllexport) void make_int(std::string int_name, std::string int_value) {
+extern "C" __declspec(dllexport) bool create_int(std::string int_name, std::string int_value) {
 
-	// check variable name
+	//if variable already in map
+
+	auto map_var = variables.find(int_name);
+
+	if ( map_var != variables.end() ) {
+
+		map_var->second.value = int_value;
+		return VAILD_NAME;
+
+	}
+	
+	// create process
+
+	// check name
+	for (size_t i = 0; i < int_name.size(); i++) {
+
+		if ( !(std::isalpha(int_name[i])) ) return INVALID_NAME;
+		
+	}
 
 	// store variable if valid
-	variables.insert(int_name, int_value);
+	var new_int(int_name, int_value, INT_128);
+	variables.insert(std::pair<std::string, var> { new_int.name , new_int } );
 
+	return VAILD_NAME;
 }
 
-extern "C" __declspec(dllexport) void make_float(std::string float_name, std::string float_value) {
+extern "C" __declspec(dllexport) bool create_float(std::string float_name, std::string float_value) {
 	
 	// check variable name
 
 	// store variable if valid
-	variables.insert(float_name, float_value);
+	/*
+	var new_float(float_name, float_value, FLOAT_128);
+	variables.insert( std::pair<std::string, var> { new_float.name , new_float } );
+	*/
+	return false;
 
 }
 
-extern "C" __declspec(dllexport) void make_function(
-	std::string function_name , 
-	std::string function_expression 
+extern "C" __declspec(dllexport) bool create_function(
+	std::string function_definition
 ) {
 
-	// check function name
-
-	// store function if valid
-	functions.insert(function_name, function_expression);
+	// check 
+	
+	// process and store function
+	/*
+	func function_object( "def_name" , "x*5+y" , { "y" , "x" } );
+	functions.insert( std::pair<std::string, func>{ function_object.name , function_object } );
+	*/
+	return false;
 
 }

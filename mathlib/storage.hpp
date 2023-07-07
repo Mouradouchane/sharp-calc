@@ -5,21 +5,14 @@
 // var_name : var_value
 // fn_name  : fn_string
 
+#pragma once
+
 #include "pch.h"
-
-#ifndef map
-	#include <map>
-#endif
-
-#ifndef string
-	#include <string>
-#endif
-
+#include "framework.h"
 
 // variables map
-std::map<std::string, std::string> variables;
-
+extern std::map<std::string, var>  variables = {};
 
 // functions map
-std::map<std::string, std::string> functions;
+extern std::map<std::string, func> functions = {};
 
