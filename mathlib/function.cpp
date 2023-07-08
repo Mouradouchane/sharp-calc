@@ -44,7 +44,7 @@ public :
 		this->expression = fn_expression;
 		
 		// copy parameters
-		for (std::string const& parameter : fn_parameters ) {
+		for (std::string parameter : fn_parameters ) {
 			this->parameters.push_back(parameter);
 		}
 

@@ -1,18 +1,26 @@
 
-// file for containing "variables map" and "functions map"
+/*
+	declare storage map's as external global 
+*/
 
-// string	: string
-// var_name : var_value
-// fn_name  : fn_string
+#ifndef map
+	#include <map>
+#endif
 
-#pragma once
+#ifndef string
+	#include <string>
+#endif
 
-#include "pch.h"
-#include "framework.h"
+#ifndef function
+	#include "function.cpp"
+#endif
+
+#ifndef variables
+	#include "variables.cpp"
+#endif
 
 // variables map
-extern std::map<std::string, var>  variables = {};
+extern std::map<std::string, var>  variables;
 
 // functions map
-extern std::map<std::string, func> functions = {};
-
+extern std::map<std::string, func> functions;

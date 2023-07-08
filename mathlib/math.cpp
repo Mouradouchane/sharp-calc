@@ -4,6 +4,10 @@
 #include "framework.h"
 
 #include "math.hpp"
+#define _math
+
+#include "interface.cpp"
+#define _interface
 
 BOOL APIENTRY DllMain( HMODULE hModule , DWORD  ul_reason_for_call , LPVOID lpReserved ) {
 

@@ -11,31 +11,3 @@
 #include <string>
 #include <vector>
 //#include <oleauto.h>
-
-#ifndef algorithm
-	#include <algorithm>
-#endif
-
-#ifndef defs
-	#include "defs.hpp"
-#endif
-
-#ifndef map
-	#include <map>
-#endif
-
-#ifndef node
-	#include "node.cpp"
-#endif
-
-#ifndef function
-	#include "function.cpp"
-#endif
-
-#ifndef variables
-	#include "variables.cpp"
-#endif
-
-#ifndef storage
-	#include "storage.hpp"
-#endif

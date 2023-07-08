@@ -3,10 +3,26 @@
 #include "pch.h"
 #include "framework.h"
 
-/*
-std::map<std::string, var>  variables;
-std::map<std::string, func> functions;
-*/
+#ifndef _storage 
+	#define _storage 
+	#include "storage.hpp"
+#endif 
+
+#ifndef _defs
+	#define _defs
+	#include "defs.hpp"
+#endif
+
+#ifndef _function
+	#define _function
+	#include "function.cpp"
+#endif
+
+#ifndef _variables
+	#define _variables
+	#include "variables.cpp"
+#endif
+
 
 short operator_level(char const& ch) {
 
@@ -41,7 +57,6 @@ bool is_variable(std::string const& target_name) {
 
 	// search in variables map 
 	return (variables.count(target_name) > 0 ) ? FOUND : VAR_NOT_FOUND;
-
 }
 
 bool is_function(std::string const& target_name) {

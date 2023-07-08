@@ -4,6 +4,42 @@
 #include "pch.h"
 #include "framework.h"
 
+#ifndef _storage 
+	#define _storage 
+	#include "storage.hpp"
+#endif
+
+
+#ifndef _defs
+	#define _defs
+	#include "defs.hpp"
+#endif
+
+#ifndef _node
+	#define _node
+	#include "node.cpp"
+#endif
+
+#ifndef _function
+	#define _function
+	#include "function.cpp"
+#endif
+
+#ifndef _variables
+	#define _variables
+	#include "variables.cpp"
+#endif
+
+#ifndef _analysing
+	#define _analysing
+	#include "analysing.cpp"
+#endif
+
+#ifndef _parser
+	#define _parser
+	#include "parser.cpp"
+#endif
+
 const char* names[] = {
 	"UNDEFINED",
 	"INT",
@@ -48,7 +84,7 @@ extern "C" __declspec(dllexport) std::string process_expression(std::string math
 
 extern "C" __declspec(dllexport) bool create_int(std::string int_name, std::string int_value) {
 
-	//if variable already in map
+	// check if variable already in map
 
 	auto map_var = variables.find(int_name);
 
@@ -59,18 +95,16 @@ extern "C" __declspec(dllexport) bool create_int(std::string int_name, std::stri
 
 	}
 	
-	// create process
+	// integer creation process
 
 	// check name
 	for (size_t i = 0; i < int_name.size(); i++) {
 
-		if ( !(std::isalpha(int_name[i])) ) return INVALID_NAME;
+		if ( !(std::isalpha(int_name[i])) && int_name[i] != '_' ) return INVALID_NAME;
 		
 	}
-
-	// store variable if valid
-	var new_int(int_name, int_value, INT_128);
-	variables.insert(std::pair<std::string, var> { new_int.name , new_int } );
+	// then save it 
+	variables.insert(std::pair<std::string, var> { int_name , var(int_name, int_value, INT_128) } );
 
 	return VAILD_NAME;
 }

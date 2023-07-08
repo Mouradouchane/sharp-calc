@@ -4,6 +4,23 @@
 #include "pch.h"
 #include "framework.h"
 
+/*
+#ifndef _storage 
+	#define _storage 
+	#include "storage.hpp"
+#endif
+*/
+
+#ifndef _node 
+	#define _node 
+	#include "node.cpp"
+#endif
+
+#ifndef _analysing
+	#define _analysing 
+	#include "analysing.cpp"
+#endif
+
 // simple structure who hold a few information about "math_expressions" 
 class expression_info {
 	
@@ -64,9 +81,6 @@ static void pass_sub_expression( std::string & expression , size_t & index ) {
 /*
 	function for "check/analyse" the "math expression" to make sure that
 	everything is ok "before start parsing or operate" on it .
-*/
-/*
-	todo : fix "function cant catch last var name" bug !!!!!!!!!!!!
 */
 expression_info check_expression( std::string const& math_expression ) {
 	
@@ -137,9 +151,9 @@ expression_info check_expression( std::string const& math_expression ) {
 			return result;
 		}
 
-		if ( is_operator(math_expression[i]) || check_range ) {
+		if ( is_operator(math_expression[i]) || check_range || i == (math_expression.size() - 1) ) {
 
-			end = i - 1;
+			end = (i == (math_expression.size() - 1) ) ? i : i - 1;
 
 			// take a copy of that sub expression in that range 
 			std::string sub_expression = math_expression.substr( start , ( end - start ) + 1);
