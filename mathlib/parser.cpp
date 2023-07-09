@@ -78,6 +78,18 @@ static void pass_sub_expression( std::string & expression , size_t & index ) {
 
 } // end of pass_sub_expression function
 
+
+// function to remove space from "math expression"
+void trim_expression( std::string & math_expression ) {
+	
+	math_expression.erase(
+		std::remove_if(math_expression.begin(), math_expression.end() , std::isspace),
+		math_expression.end()
+	);
+
+} // end of trim_expression function
+
+
 /*
 	function for "check/analyse" the "math expression" to make sure that
 	everything is ok "before start parsing or operate" on it .

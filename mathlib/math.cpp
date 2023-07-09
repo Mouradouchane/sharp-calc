@@ -3,9 +3,6 @@
 #include "pch.h"
 #include "framework.h"
 
-#include "math.hpp"
-#define _math
-
 #include "interface.cpp"
 #define _interface
 

@@ -9,7 +9,6 @@
 	#include "storage.hpp"
 #endif
 
-
 #ifndef _defs
 	#define _defs
 	#include "defs.hpp"
@@ -67,6 +66,8 @@ static void print_parsed_expression(node& expression_node , size_t tab = 1) {
 
 extern "C" __declspec(dllexport) std::string process_expression(std::string math_expression) {
 
+	trim_expression(math_expression);
+
 	expression_info check = check_expression(math_expression);
 
 	if( check.invalid_expression_exception ) return std::string("ERROR:INVALID EXPRESSION");
@@ -80,59 +81,51 @@ extern "C" __declspec(dllexport) std::string process_expression(std::string math
 	std::cout << "============== E N D ==================\n";
 
 	return std::string("");
-}
 
-extern "C" __declspec(dllexport) bool create_int(std::string int_name, std::string int_value) {
+} // end of process_expression function
 
-	// check if variable already in map
 
-	auto map_var = variables.find(int_name);
+extern "C" __declspec(dllexport) bool create_int(std::string int_name, std::string int_value ) {
 
-	if ( map_var != variables.end() ) {
-
-		map_var->second.value = int_value;
-		return VAILD_NAME;
-
-	}
-	
-	// integer creation process
+	// creation process
 
 	// check name
-	for (size_t i = 0; i < int_name.size(); i++) {
+	if (!is_valid_name(int_name)) return INVALID_NAME;
 
-		if ( !(std::isalpha(int_name[i])) && int_name[i] != '_' ) return INVALID_NAME;
-		
-	}
-	// then save it 
-	variables.insert(std::pair<std::string, var> { int_name , var(int_name, int_value, INT_128) } );
+	// check value 
+	if (!is_int(int_value)) return INVALID_VALUE;
 
-	return VAILD_NAME;
-}
+	// if "name & value" are valid then store it 
+	variables.insert(std::pair<std::string, var> { int_name , var(int_name, int_value, (int_value[0] == '-') ? INT_128 : UINT_128 ) });
 
-extern "C" __declspec(dllexport) bool create_float(std::string float_name, std::string float_value) {
+	return VALID_NAME;
+
+} // end of create_int function
+
+
+extern "C" __declspec(dllexport) bool create_float(std::string float_name, std::string float_value ) {
 	
-	// check variable name
+	// creation process
 
-	// store variable if valid
-	/*
-	var new_float(float_name, float_value, FLOAT_128);
-	variables.insert( std::pair<std::string, var> { new_float.name , new_float } );
-	*/
-	return false;
+	// check name
+	if( ! is_valid_name(float_name) ) return INVALID_NAME;
 
-}
+	// check value 
+	if ( ! is_float(float_value) ) return INVALID_VALUE;
+
+	// if "name & value" are valid then store it 
+	variables.insert(std::pair<std::string, var> { float_name, var(float_name, float_value, (float_value[0] == '-') ? FLOAT_128 : UFLOAT_128 ) });
+
+	return VALID_NAME;
+
+} // end of create_float function
+
 
 extern "C" __declspec(dllexport) bool create_function(
 	std::string function_definition
 ) {
 
-	// check 
-	
-	// process and store function
-	/*
-	func function_object( "def_name" , "x*5+y" , { "y" , "x" } );
-	functions.insert( std::pair<std::string, func>{ function_object.name , function_object } );
-	*/
+
 	return false;
 
-}
+} // end of create_function function

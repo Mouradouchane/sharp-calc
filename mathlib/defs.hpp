@@ -2,10 +2,16 @@
 #pragma once 
 
 // general 
-#define FOUND true
-#define NOT_FOUND false
+#define FOUND 1
+#define NOT_FOUND 0
 
-// types in expression
+#define INVALID_NAME 0
+#define VALID_NAME 1
+
+#define INVALID_VALUE 0
+#define VALID_VALUE 1
+
+// types
 #define UNDEFINED 0 
 #define INT 1 
 #define UINT 2 
@@ -23,13 +29,13 @@
 
 // storage 
 #define VAR_NOT_FOUND 0
-#define FUNCTION_NOT_FOUND 0
-#define INVALID_NAME 0
-#define VAILD_NAME 1
+#define VAR_FOUND 1
 
-// NUMBERS
+#define FUNCTION_NOT_FOUND 0
+#define FUNCTION_FOUND 1
+
+// numbers types
 #define INT_128 1
 #define UINT_128 2
 #define FLOAT_128 3
 #define UFLOAT_128 4
-

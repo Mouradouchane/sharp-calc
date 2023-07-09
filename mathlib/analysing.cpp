@@ -66,19 +66,27 @@ bool is_function(std::string const& target_name) {
 
 }
 
-bool is_int(std::string const& target_name) {
+// to check if target_value is a valid integer value or not
+bool is_int(std::string const& target_value) {
 
-	int value = 0;
-	for (size_t i = 0; i < target_name.size(); i++) {
+	int value = int(target_value[0] - '0');
 
-		value = int(target_name[i] - '0');
-		if (value < 0 || value > 9) return false;
+	if ( ( value < 0 || value > 9 ) && ( target_value[0] != '-' && target_value[0] != '+') ) {
+
+		return INVALID_VALUE;
+	}
+
+	for (size_t i = 1; i < target_value.size(); i++) {
+
+		value = int(target_value[i] - '0');
+		if (value < 0 || value > 9) return INVALID_VALUE;
 
 	}
 
-	return true;
+	return VALID_VALUE;
 }
 
+// to check if target_value is a valid float value or not
 static bool is_float(std::string const& target_name) {
 
 	for (size_t i = 0; i < target_name.size(); i++) {
@@ -96,4 +104,15 @@ static bool is_float(std::string const& target_name) {
 	}
 
 	return false;
+}
+
+bool is_valid_name(std::string const& target_name) {
+
+	for (size_t i = 0; i < target_name.size(); i++) {
+
+		if (!(std::isalpha(target_name[i])) && target_name[i] != '_') return INVALID_NAME;
+
+	}
+
+	return VALID_NAME;
 }
