@@ -46,11 +46,11 @@ class expression_info {
 */
 static short define_this(std::string const& undefined_value) {
 
-	if (is_operator(undefined_value[0]))return OPERATOR;
-	if (is_int(undefined_value))		return INT;
-	if (is_float(undefined_value))		return FLOAT;
-	if (is_variable(undefined_value))	return VARIABLE;
-	if (is_function(undefined_value))	return FUNCTION;
+	if ( is_operator(undefined_value[0]) )				return OPERATOR;
+	if ( is_int(undefined_value)   == VALID_VALUE)		return INT;
+	if ( is_float(undefined_value) == VALID_VALUE)		return FLOAT;
+	if ( is_variable(undefined_value) == FOUND )	return VARIABLE;
+	if ( is_function(undefined_value) == FOUND )	return FUNCTION;
 
 	return UNDEFINED;
 }

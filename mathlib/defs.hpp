@@ -2,14 +2,18 @@
 #pragma once 
 
 // general 
-#define FOUND 1
 #define NOT_FOUND 0
+#define FOUND 1
 
-#define INVALID_NAME 0
-#define VALID_NAME 1
+#define VALID 1
+#define INVALID 0
 
-#define INVALID_VALUE 0
-#define VALID_VALUE 1
+#define VALID_NAME 2
+#define VALID_VALUE 3
+
+#define INVALID_NAME 4
+#define INVALID_VALUE 5
+#define INVALID_FUNCTION_DEFINITION 6
 
 // types
 #define UNDEFINED 0 
@@ -37,5 +41,12 @@
 // numbers types
 #define INT_128 1
 #define UINT_128 2
+
 #define FLOAT_128 3
 #define UFLOAT_128 4
+
+#define HEX_128 5
+#define UHEX_128 6
+
+#define BINARY_128 7
+#define UBINARY_128 8

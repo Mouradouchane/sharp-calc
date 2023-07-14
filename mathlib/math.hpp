@@ -1,8 +1,14 @@
 
 #pragma once
 
-#ifndef framework
+#ifndef _framework
+	#define _framework
 	#include "framework.h"
+#endif
+
+#ifndef _defs
+	#define _defs
+	#include "defs.hpp"
 #endif
 
 // DLL interface 
@@ -26,16 +32,22 @@ extern "C" __declspec(dllexport) std::string process_expression(std::string math
 	/*
 		function for you to define int's
 	*/ 
-extern "C" 	__declspec(dllexport) bool create_int(std::string int_name , std::string int_value);
+extern "C" 	__declspec(dllexport) short create_int(std::string int_name , std::string int_value);
 
 
 	/*
 		function for you to define float's
 	*/
-extern "C" 	__declspec(dllexport) bool create_float(std::string float_name , std::string float_value);
+extern "C" 	__declspec(dllexport) short create_float(std::string float_name , std::string float_value);
 
 
 	/*
 		function for you to define function's
 	*/
-extern "C" __declspec(dllexport) bool create_function( std::string function_definition );
+extern "C" __declspec(dllexport) short create_function( std::string function_definition );
+
+
+	/*
+		function for you to get a variable from the "variables map"
+	*/
+extern "C" __declspec(dllexport) std::string get_variable(std::string var_name);

@@ -85,43 +85,52 @@ extern "C" __declspec(dllexport) std::string process_expression(std::string math
 } // end of process_expression function
 
 
-extern "C" __declspec(dllexport) bool create_int(std::string int_name, std::string int_value ) {
+// function to get back a value of variable from the "variables map"
+extern "C" __declspec(dllexport) std::string get_variable(std::string var_name) {
+
+	std::map<std::string, var>::iterator container = variables.find(var_name);
+
+	return (container != variables.end()) ? container->second.value : std::string("");
+
+} // end of get_variable function
+
+extern "C" __declspec(dllexport) short create_int(std::string int_name, std::string int_value ) {
 
 	// creation process
 
 	// check name
-	if (!is_valid_name(int_name)) return INVALID_NAME;
+	if ( is_valid_name(int_name) == INVALID_NAME ) return INVALID_NAME;
 
 	// check value 
-	if (!is_int(int_value)) return INVALID_VALUE;
+	if ( is_int(int_value) == INVALID_VALUE ) return INVALID_VALUE;
 
 	// if "name & value" are valid then store it 
 	variables.insert(std::pair<std::string, var> { int_name , var(int_name, int_value, (int_value[0] == '-') ? INT_128 : UINT_128 ) });
 
-	return VALID_NAME;
+	return VALID;
 
 } // end of create_int function
 
 
-extern "C" __declspec(dllexport) bool create_float(std::string float_name, std::string float_value ) {
+extern "C" __declspec(dllexport) short create_float(std::string float_name, std::string float_value ) {
 	
 	// creation process
 
 	// check name
-	if( ! is_valid_name(float_name) ) return INVALID_NAME;
+	if( is_valid_name(float_name) == INVALID_NAME ) return INVALID_NAME;
 
 	// check value 
-	if ( ! is_float(float_value) ) return INVALID_VALUE;
+	if ( is_float(float_value) == INVALID_VALUE ) return INVALID_VALUE;
 
 	// if "name & value" are valid then store it 
 	variables.insert(std::pair<std::string, var> { float_name, var(float_name, float_value, (float_value[0] == '-') ? FLOAT_128 : UFLOAT_128 ) });
 
-	return VALID_NAME;
+	return VALID;
 
 } // end of create_float function
 
 
-extern "C" __declspec(dllexport) bool create_function(
+extern "C" __declspec(dllexport) short create_function(
 	std::string function_definition
 ) {
 

@@ -67,7 +67,7 @@ bool is_function(std::string const& target_name) {
 }
 
 // to check if target_value is a valid integer value or not
-bool is_int(std::string const& target_value) {
+short is_int(std::string const& target_value) {
 
 	int value = int(target_value[0] - '0');
 
@@ -87,26 +87,32 @@ bool is_int(std::string const& target_value) {
 }
 
 // to check if target_value is a valid float value or not
-static bool is_float(std::string const& target_name) {
+short is_float(std::string const& target_value) {
 
-	for (size_t i = 0; i < target_name.size(); i++) {
+	for (size_t i = 0; i < target_value.size(); i++) {
 
-		if (target_name[i] == '.') {
+		if (target_value[i] == '.') {
+
+			if (i == 0) 
+				return is_int( target_value.substr(1 , target_value.size() - 1) );
+
+			if (i == (target_value.size() - 1))
+				return is_int( target_value.substr(0 , target_value.size() - 1) );
 
 			return (
-				(i > 0) ? is_int(target_name.substr(0, i)) : true
+				is_int(target_value.substr(0, i)) == VALID_VALUE
 				&&
-				(i < target_name.length()) ? is_int(target_name.substr(i + 1, target_name.size() - i)) : true
-			);
+				is_int(target_value.substr(i + 1, target_value.size() - i)) == VALID_VALUE
+				) ? VALID_VALUE : INVALID_VALUE;
 
 		}
 
 	}
 
-	return false;
+	return INVALID_VALUE;
 }
 
-bool is_valid_name(std::string const& target_name) {
+short is_valid_name(std::string const& target_name) {
 
 	for (size_t i = 0; i < target_name.size(); i++) {
 
