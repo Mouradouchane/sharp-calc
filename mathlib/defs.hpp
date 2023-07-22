@@ -14,6 +14,7 @@
 #define INVALID_NAME 4
 #define INVALID_VALUE 5
 #define INVALID_FUNCTION_DEFINITION 6
+#define INVALID_FUNCTION_PARAMETERS 7
 
 // types
 #define UNDEFINED 0 
@@ -24,6 +25,7 @@
 #define VARIABLE 5 
 #define FUNCTION 6 
 #define OPERATOR 7
+#define PARAMETER 8
 
 // operators levels 
 #define LEVEL_1 1

@@ -96,15 +96,15 @@ extern "C" __declspec(dllexport) std::string get_variable(std::string var_name) 
 
 extern "C" __declspec(dllexport) short create_int(std::string int_name, std::string int_value ) {
 
-	// creation process
+	// remove spaces then check 
 
-	// check name
+	trim_expression(int_name);
 	if ( is_valid_name(int_name) == INVALID_NAME ) return INVALID_NAME;
 
-	// check value 
+	trim_expression(int_value);
 	if ( is_int(int_value) == INVALID_VALUE ) return INVALID_VALUE;
 
-	// if "name & value" are valid then store it 
+	// if "name" and "value" ==> correct
 	variables.insert(std::pair<std::string, var> { int_name , var(int_name, int_value, (int_value[0] == '-') ? INT_128 : UINT_128 ) });
 
 	return VALID;
@@ -114,15 +114,15 @@ extern "C" __declspec(dllexport) short create_int(std::string int_name, std::str
 
 extern "C" __declspec(dllexport) short create_float(std::string float_name, std::string float_value ) {
 	
-	// creation process
+	// remove spaces then check 
 
-	// check name
+	trim_expression(float_name);
 	if( is_valid_name(float_name) == INVALID_NAME ) return INVALID_NAME;
 
-	// check value 
+	trim_expression(float_value);
 	if ( is_float(float_value) == INVALID_VALUE ) return INVALID_VALUE;
 
-	// if "name & value" are valid then store it 
+	// if "name" and "value" ==> correct
 	variables.insert(std::pair<std::string, var> { float_name, var(float_name, float_value, (float_value[0] == '-') ? FLOAT_128 : UFLOAT_128 ) });
 
 	return VALID;
@@ -131,9 +131,48 @@ extern "C" __declspec(dllexport) short create_float(std::string float_name, std:
 
 
 extern "C" __declspec(dllexport) short create_function(
-	std::string function_definition
+	std::string function_name,
+	std::string function_parameters,
+	std::string function_expression 
 ) {
 
+	// check name
+	trim_expression(function_name);
+	if (is_valid_name(function_name) == INVALID_NAME) return INVALID_NAME;
+
+	func new_function_object;
+	new_function_object.name = function_name;
+
+	trim_expression(function_parameters);
+	
+	if (function_parameters != "") {
+
+		// parse + check parameters
+		std::vector<std::string>* parameters = parse_parameters(function_parameters);
+	
+		if (parameters == nullptr) return INVALID_FUNCTION_PARAMETERS;
+
+		// copy parameters 
+		new_function_object.parameters = *parameters;
+
+		// sort parameters 
+		std::sort(
+			new_function_object.parameters.begin(), new_function_object.parameters.end()
+		);
+
+		delete parameters;
+	}
+
+	// check function expression 
+	trim_expression(function_expression);
+	expression_info check_result = check_expression(function_expression, &new_function_object);
+
+	if( check_result.invalid_expression_exception ) return INVALID_FUNCTION_DEFINITION;
+
+	new_function_object.root = node(function_expression);
+
+	// parse function expression
+	parse_expression( new_function_object.root , &new_function_object );
 
 	return false;
 

@@ -2,16 +2,24 @@
 #pragma once 
 #include "pch.h"
 
-#ifndef algorithm
+#ifndef _algorithm
+	#define _algorithm
 	#include <algorithm>
 #endif
 
-#ifndef string
+#ifndef _string
+	#define _string
 	#include <string>
 #endif
 
-#ifndef vector
+#ifndef _vector
+	#define _vector
 	#include <vector>
+#endif
+
+#ifndef _node
+	#define _node
+	#include "node.cpp"
 #endif
 
 /*
@@ -29,6 +37,8 @@ public :
 	std::string name = "";
 	std::string expression = "";
 	std::vector<std::string> parameters = {};
+
+	node root; // root node for the parsed expression
 
 	// constructors
 

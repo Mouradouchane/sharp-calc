@@ -44,7 +44,11 @@ extern "C" 	__declspec(dllexport) short create_float(std::string float_name , st
 	/*
 		function for you to define function's
 	*/
-extern "C" __declspec(dllexport) short create_function( std::string function_definition );
+extern "C" __declspec(dllexport) short create_function(
+	std::string function_name,
+	std::string function_parameters,
+	std::string function_expression
+);
 
 
 	/*

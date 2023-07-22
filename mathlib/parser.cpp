@@ -44,13 +44,21 @@ class expression_info {
 	function that use multiple functions from "analysing.cpp" 
 	to identify the shape of the value in string
 */
-static short define_this(std::string const& undefined_value) {
+static short define_this(std::string const& undefined_value , func * function = nullptr ) {
 
 	if ( is_operator(undefined_value[0]) )				return OPERATOR;
 	if ( is_int(undefined_value)   == VALID_VALUE)		return INT;
 	if ( is_float(undefined_value) == VALID_VALUE)		return FLOAT;
 	if ( is_variable(undefined_value) == FOUND )	return VARIABLE;
 	if ( is_function(undefined_value) == FOUND )	return FUNCTION;
+
+	if (function != nullptr) {
+
+		if (std::binary_search(function->parameters.begin(), function->parameters.end(), undefined_value)) {
+			return PARAMETER;
+		}
+
+	}
 
 	return UNDEFINED;
 }
@@ -94,7 +102,7 @@ void trim_expression( std::string & math_expression ) {
 	function for "check/analyse" the "math expression" to make sure that
 	everything is ok "before start parsing or operate" on it .
 */
-expression_info check_expression( std::string const& math_expression ) {
+expression_info check_expression( std::string const& math_expression , func * function = nullptr) {
 	
 	expression_info result;
 
@@ -112,7 +120,8 @@ expression_info check_expression( std::string const& math_expression ) {
 		// sub expression enter
 		if (math_expression[i] == '(') {
 			expression_brackets_balance++;
-			check_range = true;
+
+			if( is_operator(math_expression[i - 1]) ) check_range = true;
 		}
 
 		// sub expression leave
@@ -168,10 +177,10 @@ expression_info check_expression( std::string const& math_expression ) {
 			end = (i == (math_expression.size() - 1) ) ? i : i - 1;
 
 			// take a copy of that sub expression in that range 
-			std::string sub_expression = math_expression.substr( start , ( end - start ) + 1);
+			std::string sub_expression = math_expression.substr( start , ( end - start + i) );
 
 			// check and try to define what that "sub expression" is !!!
-			short type = define_this(sub_expression);
+			short type = define_this(sub_expression , function);
 
 			// if that "sub expression" is undefined that mean the hole math expression are "invalid"
 			if (type == UNDEFINED) {
@@ -181,9 +190,9 @@ expression_info check_expression( std::string const& math_expression ) {
 				return result;
 			}
 
-			if (type == VARIABLE) result.contain_variables = true;
-			if (type == FUNCTION) result.contain_functions = true;
-			
+			if (type == VARIABLE)  result.contain_variables = true;
+			if (type == FUNCTION)  result.contain_functions = true;
+
 			start = i + 1;
 		}
 
@@ -200,8 +209,37 @@ expression_info check_expression( std::string const& math_expression ) {
 
 } // end of check_expression function
 
+/*
+	function take a parameters of function "x,y,z,..." and parse them into vector
+	NOTE : function return pointer to *vector in heap*
+*/
+std::vector<std::string>* parse_parameters( std::string & parameters_as_string ) {
 
-void parse_expression( node& expression_node ) {
+	std::vector<std::string> * parameters = new std::vector<std::string>();
+	
+	size_t s = 0;
+	for (size_t i = 0 ; i < parameters_as_string.size(); i++) {
+
+		if ( parameters_as_string[i] == ',' || i == (parameters_as_string.size() - 1) ) {
+			parameters->push_back( 
+				parameters_as_string.substr( s , i-s + (i == (parameters_as_string.size() - 1) ? 1 : 0) )
+			);
+			s = i+1;
+
+			// if parameter name invalid 
+			if ( is_valid_name( *parameters->rbegin() ) == INVALID_NAME ) {
+				delete parameters;
+				return nullptr;
+			}
+
+		}
+
+	}
+
+	return parameters;
+}
+
+void parse_expression( node& expression_node , func * function = nullptr ) {
 
 	bool preforme_parse = false;
 
@@ -263,13 +301,13 @@ void parse_expression( node& expression_node ) {
 			after parsing the expression into tow sub_expressions
 			now we preforme "parse+check" for both new "sub_expressions"
 		*/
-		if( expression_node.left  != nullptr ) parse_expression( *expression_node.left );
-		if( expression_node.right != nullptr ) parse_expression( *expression_node.right );
+		if( expression_node.left  != nullptr ) parse_expression( *expression_node.left  , function);
+		if( expression_node.right != nullptr ) parse_expression( *expression_node.right , function);
 
 	}
 
 		// try to identifiy the current value in this node "int,float,variable,...."
-		expression_node.type = define_this(expression_node.value);
+		expression_node.type = define_this(expression_node.value , function);
 
 
 } // end of parse_expressionn function
