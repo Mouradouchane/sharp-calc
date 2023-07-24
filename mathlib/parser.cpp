@@ -49,8 +49,7 @@ static short define_this(std::string const& undefined_value , func * function = 
 	if ( is_operator(undefined_value[0]) )				return OPERATOR;
 	if ( is_int(undefined_value)   == VALID_VALUE)		return INT;
 	if ( is_float(undefined_value) == VALID_VALUE)		return FLOAT;
-	if ( is_variable(undefined_value) == FOUND )	return VARIABLE;
-	if ( is_function(undefined_value) == FOUND )	return FUNCTION;
+	if ( is_function(undefined_value) == FOUND )		return FUNCTION;
 
 	if (function != nullptr) {
 
@@ -59,6 +58,8 @@ static short define_this(std::string const& undefined_value , func * function = 
 		}
 
 	}
+
+	if ( is_variable(undefined_value) == FOUND )	return VARIABLE;
 
 	return UNDEFINED;
 }
@@ -119,9 +120,9 @@ expression_info check_expression( std::string const& math_expression , func * fu
 
 		// sub expression enter
 		if (math_expression[i] == '(') {
-			expression_brackets_balance++;
 
-			if( is_operator(math_expression[i - 1]) ) check_range = true;
+			expression_brackets_balance++;
+			check_range = true;
 		}
 
 		// sub expression leave
@@ -174,24 +175,28 @@ expression_info check_expression( std::string const& math_expression , func * fu
 
 		if ( is_operator(math_expression[i]) || check_range || i == (math_expression.size() - 1) ) {
 
-			end = (i == (math_expression.size() - 1) ) ? i : i - 1;
+			if (i == (math_expression.size() - 1)) end = (i - start) + 1;
+			else end = (i - start);
 
 			// take a copy of that sub expression in that range 
-			std::string sub_expression = math_expression.substr( start , ( end - start + i) );
+			std::string sub_expression = math_expression.substr( start , end );
 
-			// check and try to define what that "sub expression" is !!!
-			short type = define_this(sub_expression , function);
+			if (sub_expression != "") {
+				// check and try to define what that "sub expression" is !!!
+				short type = define_this(sub_expression, function);
 
-			// if that "sub expression" is undefined that mean the hole math expression are "invalid"
-			if (type == UNDEFINED) {
-				result.invalid_expression_exception = true;
-				result.undefined_exception = true;
+				// if that "sub expression" is undefined that mean the hole math expression are "invalid"
+				if (type == UNDEFINED) {
+					result.invalid_expression_exception = true;
+					result.undefined_exception = true;
 
-				return result;
+					return result;
+				}
+
+				if (type == VARIABLE)  result.contain_variables = true;
+				if (type == FUNCTION)  result.contain_functions = true;
+
 			}
-
-			if (type == VARIABLE)  result.contain_variables = true;
-			if (type == FUNCTION)  result.contain_functions = true;
 
 			start = i + 1;
 		}
@@ -261,7 +266,7 @@ void parse_expression( node& expression_node , func * function = nullptr ) {
 					1, expression_node.value.length() - 2
 				);
 
-				parse_expression(expression_node);
+				parse_expression(expression_node , function);
 				return;
 			}
 

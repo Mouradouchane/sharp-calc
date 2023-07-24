@@ -39,6 +39,8 @@
 	#include "parser.cpp"
 #endif
 
+#define _DEBUG
+
 const char* names[] = {
 	"UNDEFINED",
 	"INT",
@@ -47,7 +49,8 @@ const char* names[] = {
 	"UFLOAT",
 	"VARIABLE ",
 	"FUNCTION",
-	"OPERATOR"
+	"OPERATOR",
+	"PARAMETER"
 };
 
 // function for debug/check's only 
@@ -76,10 +79,15 @@ extern "C" __declspec(dllexport) std::string process_expression(std::string math
 
 	parse_expression( root );
 
-	std::cout << "============== PARSE ===============\n";
-	print_parsed_expression(root , 1);
-	std::cout << "============== E N D ==================\n";
+	#ifdef _DEBUG
+		std::cout << "============== PARSE ===============\n";
+		print_parsed_expression(root , 1);
+		std::cout << "============== E N D ==================\n";
+	#endif
 
+	// todo : computer parsed expression
+
+	// todo : return value
 	return std::string("");
 
 } // end of process_expression function
@@ -173,6 +181,13 @@ extern "C" __declspec(dllexport) short create_function(
 
 	// parse function expression
 	parse_expression( new_function_object.root , &new_function_object );
+
+	#ifdef _DEBUG
+		std::cout << "============== PARSE ===============\n";
+		std::cout << new_function_object.name << '{' << function_parameters << "}\n";
+		print_parsed_expression(new_function_object.root, 1);
+		std::cout << "============== E N D ==================\n";
+	#endif
 
 	return false;
 
