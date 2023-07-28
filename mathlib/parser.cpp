@@ -64,7 +64,7 @@ static short define_this(std::string const& undefined_value , func * function = 
 	return UNDEFINED;
 }
 
-static void pass_sub_expression( std::string & expression , size_t & index ) {
+static bool pass_sub_expression( std::string & expression , size_t & index ) {
 
 	INT32 balance = 1;
 
@@ -79,11 +79,13 @@ static void pass_sub_expression( std::string & expression , size_t & index ) {
 			// balance == 0 with ')' mean we find the end of this sub-expression
 			if (balance == 0) {
 				index += 1;
-				return;
+				return true;
 			}
 		}
 
 	}
+
+	return (balance == 0);
 
 } // end of pass_sub_expression function
 
@@ -98,121 +100,6 @@ void trim_expression( std::string & math_expression ) {
 
 } // end of trim_expression function
 
-
-/*
-	function for "check/analyse" the "math expression" to make sure that
-	everything is ok "before start parsing or operate" on it .
-*/
-expression_info check_expression( std::string const& math_expression , func * function = nullptr) {
-	
-	expression_info result;
-
-	// to keep track the brackets balance to see if the expression is valid or not
-	int32_t expression_brackets_balance = 0;
-	int32_t functions_brackets_balance = 0;
-
-	// to get the start/end index of something between operators in expression
-	size_t start = 0;
-	size_t end = 0;
-	bool check_range = false;
-
-	for (uint32_t i = 0; i < math_expression.size(); i++) {
-
-		// sub expression enter
-		if (math_expression[i] == '(') {
-
-			expression_brackets_balance++;
-			check_range = true;
-		}
-
-		// sub expression leave
-		if (math_expression[i] == ')') {
-
-			expression_brackets_balance--;
-			check_range = true;
-
-			// if ) followed by ( that's mean invalid expression
-			if (math_expression[i + 1] == '(') {
-				result.invalid_expression_exception = true;
-				result.bracket_bracket_exception = true;
-				return result;
-			}
-
-		}
-
-		// function enter
-		if (math_expression[i] == '{') {
-			functions_brackets_balance++;
-			check_range = true;
-		}
-
-		// function leave
-		if (math_expression[i] == '}') {
-
-			functions_brackets_balance--;
-			check_range = true;
-
-			// if } followed by { that's mean invalid expression
-			if (math_expression[i + 1] == '{') {
-				result.invalid_expression_exception = true;
-				result.bracket_bracket_exception = true;
-				return result;
-			}
-
-		}
-
-		// if operator followed by operator or operator followed by ')' that's mean "invalid expression" 
-		if ( 
-			is_operator(math_expression[i]) && 
-			( is_operator(math_expression[i + 1] ) | (math_expression[i + 1] == ')') )
-		) {
-
-			result.invalid_expression_exception = true;
-			result.operator_operator_exception  = true;
-
-			return result;
-		}
-
-		if ( is_operator(math_expression[i]) || check_range || i == (math_expression.size() - 1) ) {
-
-			if (i == (math_expression.size() - 1)) end = (i - start) + 1;
-			else end = (i - start);
-
-			// take a copy of that sub expression in that range 
-			std::string sub_expression = math_expression.substr( start , end );
-
-			if (sub_expression != "") {
-				// check and try to define what that "sub expression" is !!!
-				short type = define_this(sub_expression, function);
-
-				// if that "sub expression" is undefined that mean the hole math expression are "invalid"
-				if (type == UNDEFINED) {
-					result.invalid_expression_exception = true;
-					result.undefined_exception = true;
-
-					return result;
-				}
-
-				if (type == VARIABLE)  result.contain_variables = true;
-				if (type == FUNCTION)  result.contain_functions = true;
-
-			}
-
-			start = i + 1;
-		}
-
-		check_range = false;
-	}
-
-	// brackets_balance not equal to zero , mean this expression not a valid expression
-	if ( expression_brackets_balance != 0 || functions_brackets_balance != 0 ) {
-		result.invalid_expression_exception = true;
-		result.bracket_bracket_exception = true;
-	}
-
-	return result;
-
-} // end of check_expression function
 
 /*
 	function take a parameters of function "x,y,z,..." and parse them into vector
@@ -244,6 +131,10 @@ std::vector<std::string>* parse_parameters( std::string & parameters_as_string )
 	return parameters;
 }
 
+/*
+	function take a math node and try to parse it 
+	the parse base on the operators + - / % ... or ( { } ) ...
+*/
 void parse_expression( node& expression_node , func * function = nullptr ) {
 
 	bool preforme_parse = false;
@@ -259,7 +150,7 @@ void parse_expression( node& expression_node , func * function = nullptr ) {
 		if ( expression_node.value[i] == '(' ) {
 			bool all_inside = ( i == 0 ) ? true : false;
 
-			pass_sub_expression(expression_node.value , i);
+			if( !pass_sub_expression(expression_node.value , i) ) ;
 
 			if (i == expression_node.value.length() && all_inside) {
 				expression_node.value = expression_node.value.substr(

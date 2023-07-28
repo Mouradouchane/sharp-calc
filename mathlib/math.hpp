@@ -25,7 +25,7 @@ extern "C" __declspec(dllexport) std::string process_expression(std::string math
 
 	/*
 		NOTE !!!!!!!!
-		variables is 128 automatically 
+		variables is 128bit automatically 
 	*/
 
 

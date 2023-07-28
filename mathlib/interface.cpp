@@ -53,7 +53,11 @@ const char* names[] = {
 	"PARAMETER"
 };
 
-// function for debug/check's only 
+/*
+	functions that should be only in debug
+*/
+#ifdef _DEBUG
+
 static void print_parsed_expression(node& expression_node , size_t tab = 1) {
 
 	if( expression_node.right != nullptr ) print_parsed_expression(*expression_node.right, tab + tab);
@@ -67,16 +71,17 @@ static void print_parsed_expression(node& expression_node , size_t tab = 1) {
 
 }
 
+#endif
+
 extern "C" __declspec(dllexport) std::string process_expression(std::string math_expression) {
 
+	// remove space's from expression
 	trim_expression(math_expression);
 
-	expression_info check = check_expression(math_expression);
-
-	if( check.invalid_expression_exception ) return std::string("ERROR:INVALID EXPRESSION");
-
+	// create binary-tree for "math_expression"
 	node root( math_expression );
 
+	// start to parse "math_expression"
 	parse_expression( root );
 
 	#ifdef _DEBUG
@@ -171,11 +176,8 @@ extern "C" __declspec(dllexport) short create_function(
 		delete parameters;
 	}
 
-	// check function expression 
+	// remove space's from expression 
 	trim_expression(function_expression);
-	expression_info check_result = check_expression(function_expression, &new_function_object);
-
-	if( check_result.invalid_expression_exception ) return INVALID_FUNCTION_DEFINITION;
 
 	new_function_object.root = node(function_expression);
 
