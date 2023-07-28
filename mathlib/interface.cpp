@@ -78,10 +78,13 @@ extern "C" __declspec(dllexport) std::string process_expression(std::string math
 	// remove space's from expression
 	trim_expression(math_expression);
 
-	// create binary-tree for "math_expression"
+	// check operator's , brackets in the expression
+	if (check_expression(math_expression) != VALID_MATH_EXPRESSION) return std::string("");
+
+	// create binary-tree for the expression
 	node root( math_expression );
 
-	// start to parse "math_expression"
+	// start to parse the expression
 	parse_expression( root );
 
 	#ifdef _DEBUG
@@ -178,6 +181,9 @@ extern "C" __declspec(dllexport) short create_function(
 
 	// remove space's from expression 
 	trim_expression(function_expression);
+
+	// check operator's , brackets in the function expression
+	if (check_expression(function_expression) != VALID_MATH_EXPRESSION) return INVALID_FUNCTION_DEFINITION;
 
 	new_function_object.root = node(function_expression);
 

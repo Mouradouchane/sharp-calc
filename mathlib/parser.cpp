@@ -64,7 +64,7 @@ static short define_this(std::string const& undefined_value , func * function = 
 	return UNDEFINED;
 }
 
-static bool pass_sub_expression( std::string & expression , size_t & index ) {
+static void pass_sub_expression( std::string & expression , size_t & index ) {
 
 	INT32 balance = 1;
 
@@ -79,13 +79,11 @@ static bool pass_sub_expression( std::string & expression , size_t & index ) {
 			// balance == 0 with ')' mean we find the end of this sub-expression
 			if (balance == 0) {
 				index += 1;
-				return true;
+				return;
 			}
 		}
 
 	}
-
-	return (balance == 0);
 
 } // end of pass_sub_expression function
 
@@ -150,7 +148,7 @@ void parse_expression( node& expression_node , func * function = nullptr ) {
 		if ( expression_node.value[i] == '(' ) {
 			bool all_inside = ( i == 0 ) ? true : false;
 
-			if( !pass_sub_expression(expression_node.value , i) ) ;
+			pass_sub_expression(expression_node.value, i);
 
 			if (i == expression_node.value.length() && all_inside) {
 				expression_node.value = expression_node.value.substr(

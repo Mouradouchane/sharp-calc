@@ -122,3 +122,60 @@ short is_valid_name(std::string const& target_name) {
 
 	return VALID_NAME;
 }
+
+
+short check_expression(std::string const& expression) {
+
+	size_t expression_brackets_balance = 0;
+	size_t function_brackets_balance = 0;
+
+	for (size_t i = 0; i < expression.size(); i++) {
+
+		if ( is_operator(expression[i]) ) {
+
+			if (is_operator(expression[i - 1])) return OPERATOR_OPERATOR_EXCEPTION;
+			else continue;
+
+		}
+
+		if ( expression[i] == '(' ) {
+
+			if (expression[i - 1] == ')') return BRACKET_BRACKET_EXCEPTION;
+			if (is_operator(expression[i + 1])) return BRACKET_OPERATOR_EXCEPTION;
+
+			expression_brackets_balance++;
+			continue;
+		}
+
+		if ( expression[i] == ')' ) {
+
+			if (is_operator(expression[i - 1])) return BRACKET_OPERATOR_EXCEPTION;
+			if (expression[i + 1] == '(') return BRACKET_BRACKET_EXCEPTION;
+
+			expression_brackets_balance--;
+			continue;
+		}
+
+		if (expression[i] == '{') {
+
+			if (is_operator(expression[i - 1]) || is_operator(expression[i + 1])) return BRACKET_OPERATOR_EXCEPTION;
+			
+			function_brackets_balance++;
+			continue;
+		}
+
+		if (expression[i] == '}') {
+
+			if (is_operator(expression[i - 1])) return BRACKET_OPERATOR_EXCEPTION;
+			if (expression[i + 1] == '(') return BRACKET_BRACKET_EXCEPTION;
+
+			function_brackets_balance++;
+			continue;
+		}
+
+	}
+
+	return ( (expression_brackets_balance == 0 && expression_brackets_balance == 0) ? VALID_MATH_EXPRESSION : UNBALANCED_BRACKETS_EXCEPTION );
+
+
+} // end of check_expression function
