@@ -39,7 +39,17 @@
 	#include "parser.cpp"
 #endif
 
+#ifndef _executor
+	#define _executor
+	#include "executor.cpp"
+#endif
+
 #define _DEBUG
+
+/*
+	code that should be only in debug
+*/
+#ifdef _DEBUG
 
 const char* names[] = {
 	"UNDEFINED",
@@ -52,11 +62,6 @@ const char* names[] = {
 	"OPERATOR",
 	"PARAMETER"
 };
-
-/*
-	functions that should be only in debug
-*/
-#ifdef _DEBUG
 
 static void print_parsed_expression(node& expression_node , size_t tab = 1) {
 
@@ -84,8 +89,8 @@ extern "C" __declspec(dllexport) std::string process_expression(std::string math
 	// create binary-tree for the expression
 	node root( math_expression );
 
-	// start to parse the expression
-	parse_expression( root );
+	// parse the expression
+	if( parse_expression( root ) == UNDEFINED_VALUE_EXCEPTION ) return std::string("");
 
 	#ifdef _DEBUG
 		std::cout << "============== PARSE ===============\n";
@@ -188,7 +193,9 @@ extern "C" __declspec(dllexport) short create_function(
 	new_function_object.root = node(function_expression);
 
 	// parse function expression
-	parse_expression( new_function_object.root , &new_function_object );
+	if (parse_expression(new_function_object.root, &new_function_object) == UNDEFINED_VALUE_EXCEPTION) {
+		return UNDEFINED_VALUE_EXCEPTION;
+	}
 
 	#ifdef _DEBUG
 		std::cout << "============== PARSE ===============\n";

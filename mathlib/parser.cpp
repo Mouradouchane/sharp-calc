@@ -133,7 +133,7 @@ std::vector<std::string>* parse_parameters( std::string & parameters_as_string )
 	function take a math node and try to parse it 
 	the parse base on the operators + - / % ... or ( { } ) ...
 */
-void parse_expression( node& expression_node , func * function = nullptr ) {
+short parse_expression( node& expression_node , func * function = nullptr ) {
 
 	bool preforme_parse = false;
 
@@ -145,18 +145,22 @@ void parse_expression( node& expression_node , func * function = nullptr ) {
 	short current_op_level = 6;
 	for (size_t i = 0; i < expression_node.value.size(); i++ ) {
 
+		// if (...) found
 		if ( expression_node.value[i] == '(' ) {
 			bool all_inside = ( i == 0 ) ? true : false;
-
+			
+			// go to )
 			pass_sub_expression(expression_node.value, i);
 
 			if (i == expression_node.value.length() && all_inside) {
+
+				// parse the hole (...)
 				expression_node.value = expression_node.value.substr(
 					1, expression_node.value.length() - 2
 				);
 
 				parse_expression(expression_node , function);
-				return;
+				return VALID_SUB_EXPRESSION;
 			}
 
 		}
@@ -195,14 +199,25 @@ void parse_expression( node& expression_node , func * function = nullptr ) {
 			after parsing the expression into tow sub_expressions
 			now we preforme "parse+check" for both new "sub_expressions"
 		*/
-		if( expression_node.left  != nullptr ) parse_expression( *expression_node.left  , function);
-		if( expression_node.right != nullptr ) parse_expression( *expression_node.right , function);
+
+		if( expression_node.left  != nullptr ){
+			if (parse_expression(*expression_node.left, function) == UNDEFINED_VALUE_EXCEPTION) {
+				return UNDEFINED_VALUE_EXCEPTION;
+			}
+		}
+
+		if (expression_node.right != nullptr) {
+			if (parse_expression(*expression_node.right, function) == UNDEFINED_VALUE_EXCEPTION) {
+				return UNDEFINED_VALUE_EXCEPTION;
+			}
+		}
 
 	}
 
-		// try to identifiy the current value in this node "int,float,variable,...."
-		expression_node.type = define_this(expression_node.value , function);
+	// try to identifiy the current value in this node "int,float,variable,...."
+	expression_node.type = define_this(expression_node.value , function);
 
+	return (expression_node.type == UNDEFINED) ? UNDEFINED_VALUE_EXCEPTION : VALID_SUB_EXPRESSION;
 
 } // end of parse_expressionn function
 
