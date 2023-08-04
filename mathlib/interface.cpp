@@ -197,6 +197,8 @@ extern "C" __declspec(dllexport) short create_function(
 		std::cout << "============== E N D ==================\n";
 	#endif
 
-	return false;
+	functions.insert(std::pair<std::string, func>{ function_name, new_function_object});
+
+	return VALID;
 
 } // end of create_function function
