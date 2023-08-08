@@ -16,6 +16,8 @@
 #define INVALID_FUNCTION_DEFINITION 6
 #define INVALID_FUNCTION_PARAMETERS 7
 
+#define EMPTY_STRING "#E"
+
 // types
 #define UNDEFINED 0 
 #define INT 1 
@@ -52,6 +54,10 @@
 
 #define BINARY_128 7
 #define UBINARY_128 8
+
+#define INT_64 9
+#define INT_64_MAX_LENGTH 19
+#define INT_128_MAX_LENGTH 39
 
 // some expression errors 
 #define DISIVION_BY_ZERO_EXCEPTION 0
