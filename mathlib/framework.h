@@ -5,9 +5,29 @@
 #pragma once
 
 // Windows Header Files
-#include <iostream>
-#include <windows.h>
-#include <wtypes.h>
-#include <string>
-#include <vector>
+#ifndef _iostream
+	#define _iostream
+	#include <iostream>
+#endif
+
+#ifndef _windows_h
+	#define _windows_h
+	#include <windows.h>
+#endif
+
+#ifndef _wtypes
+	#define  _wtypes
+	#include <wtypes.h>
+#endif
+
+#ifndef _string 
+	#define  _string
+	#include <string>
+#endif
+
+#ifndef _vector
+	#define  _vector
+	#include <vector>
+#endif
+
 //#include <oleauto.h>

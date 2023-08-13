@@ -209,3 +209,16 @@ extern "C" __declspec(dllexport) short create_function(
 	return VALID;
 
 } // end of create_function function
+
+
+#ifdef _DEBUG
+
+extern "C" __declspec(dllexport) std::string debug_function_add(std::string a, std::string b) {
+
+	std::reverse(a.begin(), a.end());
+	std::reverse(b.begin(), b.end());
+
+	return add(a, b);
+}
+
+#endif

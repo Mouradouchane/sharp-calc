@@ -55,3 +55,16 @@ extern "C" __declspec(dllexport) short create_function(
 		function for you to get a variable from the "variables map"
 	*/
 extern "C" __declspec(dllexport) std::string get_variable(std::string var_name);
+
+
+	/*
+		functions used only in debug/testing
+	*/
+
+#ifdef _DEBUG
+
+	extern "C" __declspec(dllexport) std::string debug_function_add(std::string a, std::string b);
+
+
+
+#endif 
