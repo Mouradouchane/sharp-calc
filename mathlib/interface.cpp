@@ -213,12 +213,14 @@ extern "C" __declspec(dllexport) short create_function(
 
 #ifdef _DEBUG
 
-extern "C" __declspec(dllexport) std::string debug_function_add(std::string a, std::string b) {
-
-	std::reverse(a.begin(), a.end());
-	std::reverse(b.begin(), b.end());
+extern "C" __declspec(dllexport) std::string debug_add(std::string a, std::string b) {
 
 	return add(a, b);
+}
+
+extern "C" __declspec(dllexport) std::string debug_sub(std::string a, std::string b) {
+
+	return sub(a, b);
 }
 
 #endif
