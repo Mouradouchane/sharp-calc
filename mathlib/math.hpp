@@ -63,8 +63,9 @@ extern "C" __declspec(dllexport) std::string get_variable(std::string var_name);
 
 #ifdef _DEBUG
 
-	extern "C" __declspec(dllexport) std::string debug_function_add(std::string a, std::string b);
+extern "C" __declspec(dllexport) std::string debug_add(std::string a, std::string b);
 
+extern "C" __declspec(dllexport) std::string debug_sub(std::string a, std::string b);
 
 
 #endif 

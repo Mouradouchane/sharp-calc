@@ -50,8 +50,8 @@
 #define NUMBER_2_BIGGER  2
 
 // def's
-std::string add(std::string& number1, std::string& number2);
-std::string sub(std::string& number1, std::string& number2);
+std::string add(std::string& number1, std::string& number2 , bool dont_reverse );
+std::string sub(std::string& number1, std::string& number2 , bool dont_reverse );
 std::string mult(std::string& number1, std::string& number2);
 std::string pow(std::string& number1, std::string& power);
 std::string div(std::string& number1, std::string& number2);
@@ -65,7 +65,7 @@ short compare(std::string const& number1, std::string const& number2);
 */
 
 
-std::string add( std::string &number1 , std::string &number2 ) {
+std::string add( std::string &number1 , std::string &number2 , bool dont_reverse = false) {
 
 	short number1_type = (number1[0] == '-') ? NEGATIVE_VALUE : (number1[0] == '+') ? POSITIVE_VALUE : UNSPECIFIED_VALUE;
 	short number2_type = (number2[0] == '-') ? NEGATIVE_VALUE : (number2[0] == '+') ? POSITIVE_VALUE : UNSPECIFIED_VALUE;
@@ -75,15 +75,17 @@ std::string add( std::string &number1 , std::string &number2 ) {
 
 		if ( number1_type == NEGATIVE_VALUE && number2_type == NEGATIVE_VALUE ) goto keep_process;
 
-		else return sub(number1, number2);
+		else return sub(number1, number2 , false);
 
 	}
 
 	keep_process :
 
-	// reverse numbers -> 'easy to deal with em'
-	std::reverse(number1.begin(), number1.end());
-	std::reverse(number2.begin(), number2.end());
+	if (!dont_reverse) {
+		// reverse numbers -> 'easy to deal with em'
+		std::reverse(number1.begin(), number1.end());
+		std::reverse(number2.begin(), number2.end());
+	}
 
 	std::string result = "";
 
@@ -143,15 +145,17 @@ std::string add( std::string &number1 , std::string &number2 ) {
 
 
 
-std::string sub( std::string& number1, std::string& number2 ) {
+std::string sub( std::string& number1, std::string& number2 , bool dont_reverse = false) {
 
 	// specify numbers operators
 	short number1_type = (number1[0] == '-') ? NEGATIVE_VALUE : (number1[0] == '+') ? POSITIVE_VALUE : UNSPECIFIED_VALUE;
 	short number2_type = (number2[0] == '-') ? NEGATIVE_VALUE : (number2[0] == '+') ? POSITIVE_VALUE : UNSPECIFIED_VALUE;
 
-	// reverse numbers -> 'easy to deal with em'
-	std::reverse(number1.begin(), number1.end());
-	std::reverse(number2.begin(), number2.end());
+	if (!dont_reverse) {
+		// reverse numbers -> 'easy to deal with em'
+		std::reverse(number1.begin(), number1.end());
+		std::reverse(number2.begin(), number2.end());
+	}
 
 	short cp = compare(number1 , number2);
 	size_t len = (number1.size() > number2.size()) ? number1.size() : number2.size();
@@ -168,6 +172,8 @@ std::string sub( std::string& number1, std::string& number2 ) {
 
 	for (size_t i = 0; i < len; i++) {
 
+		// if( i < b.size() ) if (b[i] == '-' || b[i] == '+') break;
+
 		// cast digit's
 
 		if (i < a.size()) {
@@ -182,6 +188,59 @@ std::string sub( std::string& number1, std::string& number2 ) {
 		}
 		else digit2 = 0;
 
+		// calc
+
+		// a - -b => a + b
+		if ( b[ b.size() - 1] == '-' && a[ a.size() - 1] != '-' ) {
+
+			// calcualte result sub digit
+			temp = (digit1 + digit2 + carry);
+
+			// rest digits
+			digit1 = 0;
+			digit2 = 0;
+
+			if (temp > 9) {
+				carry = 1;
+				result.push_back((std::to_string(temp)[1]));
+			}
+			else {
+				carry = 0;
+				result.push_back((std::to_string(temp)[0]));
+			}
+
+			temp = 0;
+			continue;
+		}
+
+		// -a - b => -(a+b)
+		if (b[b.size() - 1] != '-' && a[a.size() - 1] == '-') {
+
+			// calcualte result sub digit
+			temp = (digit1 + digit2 + carry);
+
+			// rest digits
+			digit1 = 0;
+			digit2 = 0;
+
+			if (temp > 9) {
+				carry = 1;
+				result.push_back((std::to_string(temp)[1]));
+			}
+			else {
+				carry = 0;
+				result.push_back((std::to_string(temp)[0]));
+			}
+
+			temp = 0;
+			continue;
+		}
+
+		// -a - -b => -(a-b)
+
+
+		// default case
+
 		if (carry == 1) {
 			digit2 += 1;
 			carry = 0;
@@ -194,7 +253,17 @@ std::string sub( std::string& number1, std::string& number2 ) {
 		else temp = digit1 - digit2;
 		
 		result.push_back(std::to_string(temp)[0]);
+		
 		temp = 0;
+	}
+
+	if (number1_type == NEGATIVE_VALUE && number2_type == NEGATIVE_VALUE) {
+
+		if( cp == NUMBER_1_BIGGER ) result.push_back('-');
+
+	}
+	else {
+		if (cp == NUMBER_2_BIGGER || a[a.size() - 1] == '-') result.push_back('-');
 	}
 
 	// reverse result back to normal look :)
@@ -239,11 +308,13 @@ short compare(std::string const& number1, std::string const& number2) {
 
 		if (i < number1.size()) {
 			digit1 = (short)(number1[i] - '0');
+			digit1 = (digit1 < 0 || digit1 > 9) ? 0 : digit1;
 		}
 		else digit1 = 0;
 
 		if (i < number2.size()) {
 			digit2 = (short)(number2[i] - '0');
+			digit2 = (digit2 < 0 || digit2 > 9) ? 0 : digit2;
 		}
 		else digit2 = 0;
 
