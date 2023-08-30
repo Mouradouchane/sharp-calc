@@ -67,5 +67,7 @@ extern "C" __declspec(dllexport) std::string debug_add(std::string a, std::strin
 
 extern "C" __declspec(dllexport) std::string debug_sub(std::string a, std::string b);
 
+extern "C" __declspec(dllexport) std::string debug_mult(std::string a, std::string b);
+
 
 #endif 

@@ -41,6 +41,11 @@
 	#include <string>
 #endif
 
+#ifndef _vector
+	#define _vector
+	#include <vector>
+#endif
+
 #define NEGATIVE_VALUE 0
 #define POSITIVE_VALUE 1 
 #define UNSPECIFIED_VALUE 2
@@ -156,8 +161,10 @@ std::string add( std::string &number1 , std::string &number2 , bool do_not_rever
 	// if the bigger number is negative result gonna be negative
 	if ( a[ a.size() - 1] == '-' ) str_result.push_back('-');
 
-	// reverse result back to normal look :)
-	std::reverse(str_result.begin(), str_result.end());
+	if (!do_not_reverse) {
+		std::reverse(str_result.begin(), str_result.end());
+	}
+
 	return str_result;
 
 } // end of add function
@@ -277,10 +284,12 @@ std::string sub( std::string& number1, std::string& number2 , bool do_not_revers
 	}
 
 	if ( cp != NUMBER_2_BIGGER && number1_type == NEGATIVE_VALUE ) str_result.push_back('-');
-	if ( cp == NUMBER_2_BIGGER && number2_type) str_result.push_back('-');
+	if ( cp == NUMBER_2_BIGGER && number2_type ) str_result.push_back('-');
 
-	// reverse result back to normal look :)
-	std::reverse(str_result.begin(), str_result.end());
+	if (!do_not_reverse) {
+		std::reverse(str_result.begin(), str_result.end());
+	}
+
 	return str_result;
 
 } // end of sub function
@@ -288,8 +297,75 @@ std::string sub( std::string& number1, std::string& number2 , bool do_not_revers
 
 
 std::string mult( std::string& number1, std::string& number2 ) {
-	return "";
-}
+
+	short number1_type = (number1[0] == '-') ? NEGATIVE_VALUE : (number1[0] == '+') ? POSITIVE_VALUE : UNSPECIFIED_VALUE;
+	short number2_type = (number2[0] == '-') ? NEGATIVE_VALUE : (number2[0] == '+') ? POSITIVE_VALUE : UNSPECIFIED_VALUE;
+
+	// if -a * b or -b * a ==> -result
+	bool negative_result = (number1_type > 0 && number2_type == 0) || (number1_type == 0 && number2_type > 0) ? true : false;
+
+	// reverse numbers -> 'easy to deal with em'
+	std::reverse(number1.begin(), number1.end());
+	std::reverse(number2.begin(), number2.end());
+
+	// final result string 
+	std::string str_result;
+
+	// this vector will contain all the result of all sub multiplication , we have to add them later
+	std::vector<std::string> results;
+	std::string temp_result;
+
+	short digit1 = 0;
+	short digit2 = 0;
+	short carry  = 0;
+	short n_result = 0; // temp result 
+
+	// multiplication process
+	for (size_t i = 0 , z = 0; i < number1.size(); i++ , z++ ) {
+
+		temp_result = std::string(z,'0');
+
+		digit1 = (short)(number1[i] - '0');
+		digit1 = (digit1 < 0 || digit1 > 9) ? 0 : digit1 ;
+
+		for (size_t u = 0; u < number2.size(); u++) {
+
+			digit2 = (short)(number2[u] - '0');
+			digit2 = (digit2 < 0 || digit2 > 9) ? 0 : digit2 ;
+
+			n_result = digit1 * digit2 + carry;
+
+			if (n_result > 9) {
+				carry = (short)(std::to_string(n_result)[0] - '0');
+				temp_result.push_back(std::to_string(n_result)[1]);
+			}
+			else {
+				carry = 0;
+				temp_result.push_back(std::to_string(n_result)[0]);
+			}
+
+		}
+
+		if (carry > 0) temp_result.push_back( std::to_string(carry)[0] );
+		carry = 0;
+		results.push_back(temp_result);
+
+	}
+
+	// add results 
+	str_result = results[0];
+	for (size_t i = 1; i < results.size(); i++) {
+
+		str_result = add( str_result , results[i] , true);
+
+	}
+
+	if (negative_result) str_result.push_back('-');
+
+	std::reverse(str_result.begin(), str_result.end());
+	return str_result;
+
+} // end of mult function
 
 std::string pow( std::string& number1, std::string& power ) {
 	return "";
