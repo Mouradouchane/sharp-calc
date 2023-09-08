@@ -55,13 +55,15 @@
 #define NUMBER_2_BIGGER  2
 
 // def's
-std::string add(std::string& number1, std::string& number2 , bool dont_reverse );
-std::string sub(std::string& number1, std::string& number2 , bool dont_reverse );
+std::string add(std::string& number1, std::string& number2 , bool );
+std::string sub(std::string& number1, std::string& number2 , bool );
 std::string mult(std::string& number1, std::string& number2);
 std::string pow(std::string& number1, std::string& power);
 std::string div(std::string& number1, std::string& number2);
 std::string rem(std::string& number1, std::string& number2);
+
 short compare(std::string const& number1, std::string const& number2);
+void setup_numbers(std::string& number1, std::string& number2);
 
 
 /*
@@ -70,17 +72,15 @@ short compare(std::string const& number1, std::string const& number2);
 */
 
 
-std::string add( std::string &number1 , std::string &number2 , bool do_not_reverse = false) {
+std::string add( std::string &number1 , std::string &number2 , bool dont_setup = false) {
 
 	short number1_type = (number1[0] == '-') ? NEGATIVE_VALUE : (number1[0] == '+') ? POSITIVE_VALUE : UNSPECIFIED_VALUE;
 	short number2_type = (number2[0] == '-') ? NEGATIVE_VALUE : (number2[0] == '+') ? POSITIVE_VALUE : UNSPECIFIED_VALUE;
 
 	bool negative_plus_positive = ((!number1_type && number2_type) || (number1_type && !number2_type)) ? true : false;
 
-	if (!do_not_reverse) {
-		// reverse numbers -> 'easy to deal with em'
-		std::reverse(number1.begin(), number1.end());
-		std::reverse(number2.begin(), number2.end());
+	if (!dont_setup) {
+		setup_numbers(number1, number2);
 	}
 
 	short cp = compare(number1, number2);
@@ -96,11 +96,19 @@ std::string add( std::string &number1 , std::string &number2 , bool do_not_rever
 	short digit1 = 0;
 	short digit2 = 0;
 	short n_result = 0;
+	bool float_activated = false;
 
 	for (size_t i = 0 ; i < len ; i++ ) {
 
 		// process digit from n1
 		if (i < a.size()) {
+
+			if (a[i] == '.') {
+				str_result.push_back('.');
+				float_activated = true;
+				continue;
+			}
+
 			digit1 = (short)(a[i] - '0');
 			digit1 = (digit1 < 0 || digit1 > 9) ? 0 : digit1;
 		}
@@ -108,6 +116,13 @@ std::string add( std::string &number1 , std::string &number2 , bool do_not_rever
 
 		// process digit from n2
 		if (i < b.size()) {
+			
+			if (b[i] == '.') {
+				str_result.push_back('.');
+				float_activated = true;
+				continue;
+			}
+
 			digit2 = (short)(b[i] - '0');
 			digit2 = (digit2 < 0 || digit2 > 9) ? 0 : digit2;
 		}
@@ -161,7 +176,7 @@ std::string add( std::string &number1 , std::string &number2 , bool do_not_rever
 	// if the bigger number is negative result gonna be negative
 	if ( a[ a.size() - 1] == '-' ) str_result.push_back('-');
 
-	if (!do_not_reverse) {
+	if (!dont_setup) {
 		std::reverse(str_result.begin(), str_result.end());
 	}
 
@@ -171,16 +186,14 @@ std::string add( std::string &number1 , std::string &number2 , bool do_not_rever
 
 
 
-std::string sub( std::string& number1, std::string& number2 , bool do_not_reverse = false) {
+std::string sub( std::string& number1, std::string& number2 , bool dont_setup = false) {
 
 	// specify numbers operators
 	short number1_type = (number1[0] == '-') ? NEGATIVE_VALUE : (number1[0] == '+') ? POSITIVE_VALUE : UNSPECIFIED_VALUE;
 	short number2_type = (number2[0] == '-') ? NEGATIVE_VALUE : (number2[0] == '+') ? POSITIVE_VALUE : UNSPECIFIED_VALUE;
 
-	if (!do_not_reverse) {
-		// reverse numbers -> 'easy to deal with em'
-		std::reverse(number1.begin(), number1.end());
-		std::reverse(number2.begin(), number2.end());
+	if (!dont_setup) {
+		setup_numbers(number1, number2);
 	}
 
 	short cp = compare(number1 , number2);
@@ -203,12 +216,24 @@ std::string sub( std::string& number1, std::string& number2 , bool do_not_revers
 		// cast digit's
 
 		if (i < a.size()) {
+
+			if (a[i] == '.') {
+				str_result.push_back('.');
+				continue;
+			}
+
 			digit1 = (short)(a[i] - '0');
 			digit1 = (digit1 < 0 || digit1 > 9) ? 0 : digit1;
 		} 
 		else digit1 = 0;
 
 		if (i < b.size()) {
+
+			if (b[i] == '.') {
+				str_result.push_back('.');
+				continue;
+			}
+
 			digit2 = (short)(b[i] - '0');
 			digit2 = (digit2 < 0 || digit2 > 9) ? 0 : digit2;
 		}
@@ -286,7 +311,7 @@ std::string sub( std::string& number1, std::string& number2 , bool do_not_revers
 	if ( cp != NUMBER_2_BIGGER && number1_type == NEGATIVE_VALUE ) str_result.push_back('-');
 	if ( cp == NUMBER_2_BIGGER && number2_type ) str_result.push_back('-');
 
-	if (!do_not_reverse) {
+	if (!dont_setup) {
 		std::reverse(str_result.begin(), str_result.end());
 	}
 
@@ -367,13 +392,21 @@ std::string mult( std::string& number1, std::string& number2 ) {
 
 } // end of mult function
 
+
 std::string pow( std::string& number1, std::string& power ) {
 	return "";
-}
+} // end of pow function
+
 
 std::string div( std::string& number1, std::string& number2 ) {
-	return "";
-}
+
+	std::string str_result;
+
+
+ 
+	return str_result;
+} // end of div function
+
 
 std::string rem( std::string& number1, std::string& number2 ) {
 	return "";
@@ -421,6 +454,73 @@ short compare(std::string const& number1, std::string const& number2) {
 
 } // end of compare function
 
+// function to setup numbers and make them ready for the calculation
+void setup_numbers(std::string& number1, std::string& number2) {
+
+	short numbers_case = 0;
+
+	long int number1_float_range = -1;
+	long int number2_float_range = -1;
+
+	// check number1 if float
+	for (size_t i = 0; i < number1.size(); i++) {
+
+		if (number1[i] == '.') {
+			number1_float_range = number1.size() - i - 1;
+			numbers_case += 1;
+			break;
+		}
+
+	}
+
+	// check number2 if float
+	for (size_t i = 0; i < number2.size(); i++) {
+
+		if (number2[i] == '.') {
+			number2_float_range = number2.size() - i - 1;
+			numbers_case += 1;
+			break;
+		}
+
+	}
+
+	switch (numbers_case) {
+		
+		case 1 : { // when one number is float
+
+			std::string& int_number = (number1_float_range <  0) ? number1 : number2;
+			int_number.push_back('.');
+
+			size_t range_to_fill = (number1_float_range >= 0) ? number1_float_range : number2_float_range;
+
+			for (size_t i = 0; i < range_to_fill; i++) {
+				int_number.push_back('0');
+			}
+
+		} break;
+
+		case 2 : { // when tow numbers is float
+
+			if (number1_float_range != number2_float_range) {
+
+				std::string& short_number = (number1_float_range < number2_float_range) ? number1 : number2;
+
+				size_t range_to_fill = (number1_float_range > number2_float_range) ? number1_float_range - number2_float_range : number2_float_range - number1_float_range;
+
+				for (size_t i = 0; i < range_to_fill; i++) {
+					short_number.push_back('0');
+				}
+
+			}
+
+		} break;
+
+	}
+
+	std::reverse(number1.begin(), number1.end());
+	std::reverse(number2.begin(), number2.end());
+
+} // end of setup_numbers function
 
 
 /*

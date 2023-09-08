@@ -126,7 +126,7 @@ extern "C" __declspec(dllexport) short create_int(std::string int_name, std::str
 	if ( is_int(int_value) == INVALID_VALUE ) return INVALID_VALUE;
 
 	// if "name" and "value" ==> correct
-	variables.insert(std::pair<std::string, var> { int_name , var(int_name, int_value, (int_value[0] == '-') ? INT_128 : UINT_128 ) });
+	variables.insert(std::pair<std::string, var> { int_name , var(int_name, int_value, (int_value[0] == '-') ? _INT_ : _UINT_ ) });
 
 	return VALID;
 
@@ -144,7 +144,7 @@ extern "C" __declspec(dllexport) short create_float(std::string float_name, std:
 	if ( is_float(float_value) == INVALID_VALUE ) return INVALID_VALUE;
 
 	// if "name" and "value" ==> correct
-	variables.insert(std::pair<std::string, var> { float_name, var(float_name, float_value, (float_value[0] == '-') ? FLOAT_128 : UFLOAT_128 ) });
+	variables.insert(std::pair<std::string, var> { float_name, var(float_name, float_value, (float_value[0] == '-') ? _FLOAT_ : _UFLOAT_ ) });
 
 	return VALID;
 
@@ -227,6 +227,12 @@ extern "C" __declspec(dllexport) std::string debug_sub(std::string a, std::strin
 extern "C" __declspec(dllexport) std::string debug_mult(std::string a, std::string b) {
 	
 	return mult(a, b);
+}
+
+
+extern "C" __declspec(dllexport) void debug_setup_numbers(std::string & number1, std::string & number2) {
+
+	setup_numbers( number1 , number2 );
 }
 
 #endif

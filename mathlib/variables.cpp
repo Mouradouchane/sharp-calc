@@ -18,13 +18,13 @@ public:
 	std::string name  = "";
 	std::string value = "";
 
-	short type = INT_128; // type of the value in this variable
+	short type = _INT_; // value type 'int | float"
 
 	// constructors 
 
 	var(){}
 
-	var( std::string var_name , std::string var_value = "" , short var_type = INT_128 ) {
+	var( std::string var_name , std::string var_value = "" , short var_type = _INT_ ) {
 
 		this->name  = var_name;
 		this->value = var_value;
@@ -32,9 +32,11 @@ public:
 
 	}
 
-	// desturctors
+	// destructors
+
 	~var() {
 
 	}
 
-};
+
+}; // end of class var

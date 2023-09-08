@@ -58,7 +58,7 @@ extern "C" __declspec(dllexport) std::string get_variable(std::string var_name);
 
 
 	/*
-		functions used only in debug/testing
+		functions used in debug build
 	*/
 
 #ifdef _DEBUG
@@ -68,6 +68,8 @@ extern "C" __declspec(dllexport) std::string debug_add(std::string a, std::strin
 extern "C" __declspec(dllexport) std::string debug_sub(std::string a, std::string b);
 
 extern "C" __declspec(dllexport) std::string debug_mult(std::string a, std::string b);
+
+extern "C" __declspec(dllexport) void debug_setup_numbers(std::string& number1, std::string& number2);
 
 
 #endif 

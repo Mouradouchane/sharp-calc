@@ -43,11 +43,11 @@
 #define FUNCTION_FOUND 1
 
 // numbers types
-#define INT_128 1
-#define UINT_128 2
+#define _INT_  1
+#define _UINT_ 2
 
-#define FLOAT_128 3
-#define UFLOAT_128 4
+#define _FLOAT_ 3
+#define _UFLOAT_ 4
 
 #define HEX_128 5
 #define UHEX_128 6
