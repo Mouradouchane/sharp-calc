@@ -64,7 +64,7 @@ std::string rem(std::string& number1, std::string& number2);
 
 short compare(std::string const& number1, std::string const& number2);
 void setup_numbers(std::string& number1, std::string& number2);
-
+size_t calc_float_position(std::string const& number1, std::string const& number2);
 
 /*
 	note :	all the math functions here "preforme math" logic "on numbers as strings"
@@ -340,6 +340,8 @@ std::string mult( std::string& number1, std::string& number2 ) {
 	std::vector<std::string> results;
 	std::string temp_result;
 
+	size_t float_position = calc_float_position( number1 , number2 );
+
 	short digit1 = 0;
 	short digit2 = 0;
 	short carry  = 0;
@@ -348,6 +350,8 @@ std::string mult( std::string& number1, std::string& number2 ) {
 	// multiplication process
 	for (size_t i = 0 , z = 0; i < number1.size(); i++ , z++ ) {
 
+		if (number1[i] == '.') continue;
+		
 		temp_result = std::string(z,'0');
 
 		digit1 = (short)(number1[i] - '0');
@@ -355,6 +359,8 @@ std::string mult( std::string& number1, std::string& number2 ) {
 
 		for (size_t u = 0; u < number2.size(); u++) {
 
+			if (number2[u] == '.') continue;
+			
 			digit2 = (short)(number2[u] - '0');
 			digit2 = (digit2 < 0 || digit2 > 9) ? 0 : digit2 ;
 
@@ -385,6 +391,7 @@ std::string mult( std::string& number1, std::string& number2 ) {
 
 	}
 
+	if (float_position > 0) str_result.insert(float_position, ".");
 	if (negative_result) str_result.push_back('-');
 
 	std::reverse(str_result.begin(), str_result.end());
@@ -521,6 +528,29 @@ void setup_numbers(std::string& number1, std::string& number2) {
 	std::reverse(number2.begin(), number2.end());
 
 } // end of setup_numbers function
+
+// function mult use this function to now where index should it put "float point"
+size_t calc_float_position(std::string const& number1, std::string const& number2) {
+
+	size_t index = 0;
+
+	for (size_t i = 0; i < number1.size(); i++) {
+		if (number1[i] == '.') {
+			index += i;
+			break;
+		}
+	}
+
+	for (size_t i = 0; i < number2.size(); i++) {
+		if (number2[i] == '.') {
+			index += i;
+			break;
+		}
+	}
+
+	return index;
+
+} // end of calc_float_position function
 
 
 /*
