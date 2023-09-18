@@ -54,17 +54,22 @@
 #define NUMBER_1_BIGGER  1
 #define NUMBER_2_BIGGER  2
 
-// def's
-std::string add(std::string& number1, std::string& number2 , bool );
-std::string sub(std::string& number1, std::string& number2 , bool );
+// main functions
+std::string execute(node* target_node);
+std::string add( std::string& number1, std::string& number2 , bool );
+std::string sub( std::string& number1, std::string& number2 , bool );
 std::string mult(std::string& number1, std::string& number2);
-std::string pow(std::string& number1, std::string& power);
-std::string div(std::string& number1, std::string& number2);
-std::string rem(std::string& number1, std::string& number2);
+std::string pow( std::string& number1, std::string& power);
+std::string div( std::string& number1, std::string& number2);
+std::string rem( std::string& number1, std::string& number2);
 
+// assistance functions
 short compare(std::string const& number1, std::string const& number2);
 void setup_numbers(std::string& number1, std::string& number2);
 size_t calc_float_position(std::string const& number1, std::string const& number2);
+std::pair<std::string, std::string> how_much_in( std::string& target_number , std::string& used_number);
+std::string adapte_and_sub(std::string& number1, std::string& number2);
+std::string remove_zeros(std::string& target_number);
 
 /*
 	note :	all the math functions here "preforme math" logic "on numbers as strings"
@@ -400,26 +405,44 @@ std::string mult( std::string& number1, std::string& number2 ) {
 } // end of mult function
 
 
+
 std::string pow( std::string& number1, std::string& power ) {
 	return "";
 } // end of pow function
 
 
+// note : number1 divided by number2
 std::string div( std::string& number1, std::string& number2 ) {
 
-	std::string str_result;
+	std::string str_result = "";
+
+	number1 = remove_zeros(number1);
+	number2 = remove_zeros(number2);
+
+	// if small / big , result will be "0,..."
+	if (number2.size() > number1.size()) {
+		str_result += "0.";
+	}
 
 
- 
 	return str_result;
 } // end of div function
+
 
 
 std::string rem( std::string& number1, std::string& number2 ) {
 	return "";
 }
 
-// Note : numbers reversed !!!
+
+/*
+
+		assistance functions
+
+*/
+
+
+// Note : numbers should be reversed !!!
 short compare(std::string const& number1, std::string const& number2) {
 
 	short digit1 = 0;
@@ -529,7 +552,7 @@ void setup_numbers(std::string& number1, std::string& number2) {
 
 } // end of setup_numbers function
 
-// function mult use this function to now where index should it put "float point"
+// this function used by mult to now where index should it put " float point '.' "
 size_t calc_float_position(std::string const& number1, std::string const& number2) {
 
 	size_t index = 0;
@@ -552,6 +575,22 @@ size_t calc_float_position(std::string const& number1, std::string const& number
 
 } // end of calc_float_position function
 
+// function to remove no needed zero's from numbers
+std::string remove_zeros(std::string& target_number) {
+
+	std::string new_str_number = "";
+
+	size_t i = 0;
+	for ( ; i < (target_number.size() - 1) ; i++) {
+		if (target_number[i] == '0' && target_number[i + 1] != '0') break;
+	}
+
+	for (; i < target_number.size(); i++) {
+		new_str_number.push_back(target_number[i]);
+	}
+
+	return new_str_number;
+} // end of remove_zeros
 
 /*
 	recursive function used to compute the "math expression"
