@@ -54,6 +54,8 @@
 #define NUMBER_1_BIGGER  1
 #define NUMBER_2_BIGGER  2
 
+#define MAX_DIVISION_LOOP 128
+
 // main functions
 std::string execute(node* target_node);
 std::string add( std::string& number1, std::string& number2 , bool );
@@ -66,11 +68,14 @@ std::string rem( std::string& number1, std::string& number2);
 // assistance functions
 short compare(std::string const& number1, std::string const& number2);
 void setup_numbers(std::string& number1, std::string& number2);
-size_t calc_float_position(std::string const& number1, std::string const& number2);
-std::pair<std::string, std::string> how_much_in( std::string& target_number , std::string& used_number);
-std::string adapte_and_sub(std::string& number1, std::string& number2);
-std::string remove_zeros(std::string& target_number);
 
+size_t calc_float_position(std::string const& number1, std::string const& number2);
+
+// std::string setup_for_division(std::string& number1, std::string& number2);
+std::pair<std::string, std::string> how_much_in( std::string& target_number , std::string& used_number);
+
+std::string remove_zeros(std::string& target_number);
+bool still_not_zero(std::string const& target_number);
 /*
 	note :	all the math functions here "preforme math" logic "on numbers as strings"
 			in that way we can handle big integers and float's
@@ -415,15 +420,95 @@ std::string pow( std::string& number1, std::string& power ) {
 std::string div( std::string& number1, std::string& number2 ) {
 
 	std::string str_result = "";
+	std::pair<std::string, std::string> count_object; // used by "how_much_in" 
+	
+	bool float_point_active = false;
 
-	number1 = remove_zeros(number1);
-	number2 = remove_zeros(number2);
+	std::string number  = remove_zeros(number1);
+	std::string diviser = remove_zeros(number2);
+	
+	std::string counter_number = "0";
 
 	// if small / big , result will be "0,..."
-	if (number2.size() > number1.size()) {
-		str_result += "0.";
-	}
+	if (diviser.size() > number.size()) {
 
+		float_point_active  = true;
+		size_t needed_zeros = diviser.size() - number.size();
+
+		str_result += "0.";
+		number.push_back('0');
+
+		for ( size_t i = 1; i < needed_zeros; i++ ) {
+			number.push_back('0');
+			str_result.push_back('0');
+		}
+
+	}
+	
+
+	// division cycle
+
+	size_t loop = 0; 
+	while ( still_not_zero(number) && loop < MAX_DIVISION_LOOP ) {
+
+		// setup values 
+		size_t i = diviser.size(); 
+		while (1) {
+
+			if ( i <= number.size() ) {
+
+				// if number >= diviser
+				if ( compare(number.substr(0, i), diviser) < NUMBER_2_BIGGER ) {
+					counter_number = number.substr(0, i);
+					break;
+				}
+
+			}
+			else {
+
+				size_t f = 0;
+
+				while (count_object.second == "0") {
+
+					number.push_back('0');
+
+					if (f > 0) {
+						str_result.push_back('0');
+					}
+
+					/*
+					if (!float_point_active) {
+						float_point_active = true;
+						str_result += "0.";
+					}
+					*/
+
+					count_object = how_much_in(number, diviser);
+					f++;
+				}
+
+			}
+
+			i++;
+		}
+				
+		// count how many in 
+		count_object = how_much_in( counter_number , diviser );
+
+		// just round the numbers range for good "sub"
+		if ( count_object.first.size() < number.size() ) {
+
+			for (size_t i = 0; i < (number.size() - count_object.first.size()); i++) {
+				count_object.first.push_back('0');
+			}
+
+		}
+
+		// subtract counted value from number for next cycle
+		number = sub( number , count_object.first );
+
+		loop++;
+	}
 
 	return str_result;
 } // end of div function
@@ -582,7 +667,7 @@ std::string remove_zeros(std::string& target_number) {
 
 	size_t i = 0;
 	for ( ; i < (target_number.size() - 1) ; i++) {
-		if (target_number[i] == '0' && target_number[i + 1] != '0') break;
+		if (target_number[i] != '0') break;
 	}
 
 	for (; i < target_number.size(); i++) {
@@ -591,6 +676,15 @@ std::string remove_zeros(std::string& target_number) {
 
 	return new_str_number;
 } // end of remove_zeros
+
+bool still_not_zero(std::string const& target_number) {
+
+	for ( size_t i = 0; i < target_number.size(); i++ ) {
+		if (target_number[i] != '0' || target_number[i] != '.') return true;
+	}
+
+	return false;
+}
 
 /*
 	recursive function used to compute the "math expression"
