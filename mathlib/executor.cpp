@@ -66,7 +66,7 @@ std::string div( std::string& number1, std::string& number2);
 std::string rem( std::string& number1, std::string& number2);
 
 // assistance functions
-short compare(std::string const& number1, std::string const& number2);
+short compare(std::string & number1, std::string & number2 , bool );
 void setup_numbers(std::string& number1, std::string& number2);
 
 size_t calc_float_position(std::string const& number1, std::string const& number2);
@@ -93,7 +93,7 @@ std::string add( std::string &number1 , std::string &number2 , bool dont_setup =
 		setup_numbers(number1, number2);
 	}
 
-	short cp = compare(number1, number2);
+	short cp = compare(number1, number2 , false);
 	size_t len = (number1.size() > number2.size()) ? number1.size() : number2.size();
 
 	std::string& a = (cp == NUMBER_1_BIGGER) ? number1 : number2;
@@ -187,6 +187,10 @@ std::string add( std::string &number1 , std::string &number2 , bool dont_setup =
 	if ( a[ a.size() - 1] == '-' ) str_result.push_back('-');
 
 	if (!dont_setup) {
+
+		std::reverse(number1.begin(), number1.end());
+		std::reverse(number2.begin(), number2.end());
+
 		std::reverse(str_result.begin(), str_result.end());
 	}
 
@@ -206,7 +210,7 @@ std::string sub( std::string& number1, std::string& number2 , bool dont_setup = 
 		setup_numbers(number1, number2);
 	}
 
-	short cp = compare(number1 , number2);
+	short cp = compare(number1 , number2 , false);
 	size_t len = (number1.size() > number2.size()) ? number1.size() : number2.size();
 
 	std::string& a = (cp == NUMBER_1_BIGGER) ? number1 : number2;
@@ -322,6 +326,10 @@ std::string sub( std::string& number1, std::string& number2 , bool dont_setup = 
 	if ( cp == NUMBER_2_BIGGER && number2_type ) str_result.push_back('-');
 
 	if (!dont_setup) {
+
+		std::reverse(number1.begin(), number1.end());
+		std::reverse(number2.begin(), number2.end());
+
 		std::reverse(str_result.begin(), str_result.end());
 	}
 
@@ -404,13 +412,17 @@ std::string mult( std::string& number1, std::string& number2 ) {
 	if (float_position > 0) str_result.insert(float_position, ".");
 	if (negative_result) str_result.push_back('-');
 
+	std::reverse(number1.begin(), number1.end());
+	std::reverse(number2.begin(), number2.end());
+
 	std::reverse(str_result.begin(), str_result.end());
+
 	return str_result;
 
 } // end of mult function
 
 
-
+// todo !!!
 std::string pow( std::string& number1, std::string& power ) {
 	return "";
 } // end of pow function
@@ -458,7 +470,7 @@ std::string div( std::string& number1, std::string& number2 ) {
 			if ( i <= number.size() ) {
 
 				// if number >= diviser
-				if ( compare(number.substr(0, i), diviser) < NUMBER_2_BIGGER ) {
+				if ( compare((std::string&)number.substr(0, i), diviser , true ) < NUMBER_2_BIGGER ) {
 					counter_number = number.substr(0, i);
 					break;
 				}
@@ -504,13 +516,17 @@ std::string div( std::string& number1, std::string& number2 ) {
 
 		}
 
+		// update final result 
+		str_result += count_object.second;
+
 		// subtract counted value from number for next cycle
-		number = sub( number , count_object.first );
+		number = remove_zeros( (std::string&) sub( number , count_object.first ) );
 
 		loop++;
 	}
 
 	return str_result;
+
 } // end of div function
 
 
@@ -527,8 +543,13 @@ std::string rem( std::string& number1, std::string& number2 ) {
 */
 
 
-// Note : numbers should be reversed !!!
-short compare(std::string const& number1, std::string const& number2) {
+// Note : numbers should be reversed by default !!!
+short compare(std::string & number1, std::string & number2 , bool reverse_then_compare = false ) {
+
+	if (reverse_then_compare) {
+		std::reverse(number1.begin(), number1.end());
+		std::reverse(number2.begin(), number2.end());
+	}
 
 	short digit1 = 0;
 	short digit2 = 0;
@@ -564,6 +585,12 @@ short compare(std::string const& number1, std::string const& number2) {
 		else state = ( cp > 0 ) ? NUMBER_1_BIGGER : NUMBER_2_BIGGER;
 
 	}
+
+	if (reverse_then_compare) {
+		std::reverse(number1.begin(), number1.end());
+		std::reverse(number2.begin(), number2.end());
+	}
+
 
 	return state;
 
@@ -660,6 +687,57 @@ size_t calc_float_position(std::string const& number1, std::string const& number
 
 } // end of calc_float_position function
 
+// this function used by div to count how many times "used_number" can fit to "target_number"
+std::pair<std::string, std::string> how_much_in(std::string& target_number, std::string& used_number) {
+
+	std::string value   = "";
+	std::string repeate = "";
+
+	short comparison = compare(target_number, used_number , true);
+
+	switch (comparison) {
+
+		case NUMBERS_ARE_EQUAL : {
+			value   = target_number;
+			repeate = "1";
+		}
+		break;
+
+		case NUMBER_2_BIGGER : {
+			value   = "0";
+			repeate = "0";
+		}
+		break;
+
+		case  NUMBER_1_BIGGER: {
+
+			std::string previous_value;
+			value = used_number;
+
+			for (size_t i = 2; ; i++) {
+
+				value = add( value , used_number );
+				comparison = compare( value , target_number , true );
+
+				if (comparison == NUMBER_1_BIGGER || comparison == NUMBERS_ARE_EQUAL) {
+
+					value = (comparison == NUMBER_1_BIGGER) ? previous_value : value;
+					repeate = std::to_string(((comparison == NUMBER_1_BIGGER) ? i - 1 : i));
+
+					break;
+				}
+				else previous_value = value;
+
+			}
+
+		} break;
+
+	}
+
+	return std::pair<std::string, std::string>( value , repeate );
+
+} // end of calc_float_position function
+
 // function to remove no needed zero's from numbers
 std::string remove_zeros(std::string& target_number) {
 
@@ -680,7 +758,7 @@ std::string remove_zeros(std::string& target_number) {
 bool still_not_zero(std::string const& target_number) {
 
 	for ( size_t i = 0; i < target_number.size(); i++ ) {
-		if (target_number[i] != '0' || target_number[i] != '.') return true;
+		if (target_number[i] != '0' && target_number[i] != '.') return true;
 	}
 
 	return false;
