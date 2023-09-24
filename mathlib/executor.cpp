@@ -435,11 +435,32 @@ std::string div( std::string& number1, std::string& number2 ) {
 	std::pair<std::string, std::string> count_object; // used by "how_much_in" 
 	
 	bool float_point_active = false;
+	bool skip_counting = false;
+	bool dont_round = false;
 
 	std::string number  = remove_zeros(number1);
 	std::string diviser = remove_zeros(number2);
 	
 	std::string counter_number = "0";
+
+	/*
+		check if there's any special case like "x/0"...
+	*/ 
+
+	// if number / 0 => undefined
+	if (diviser == "0") return "undefined";
+	
+	// if number / 1 => number
+	if (diviser == "1") return number;
+
+	// if 0 / diviser => 0
+	if (number == "0") return "0";
+
+	// if x / x => 1
+	if (number == diviser) return "1";
+ 
+	// end of checking special cases ==============
+	
 
 	// if small / big , result will be "0,..."
 	if (diviser.size() > number.size()) {
@@ -461,26 +482,32 @@ std::string div( std::string& number1, std::string& number2 ) {
 	// division cycle
 
 	size_t loop = 0; 
+	size_t r = diviser.size();
+
 	while ( still_not_zero(number) && loop < MAX_DIVISION_LOOP ) {
 
 		// setup values 
-		size_t i = diviser.size(); 
-		while (1) {
+		while (true) {
 
-			if ( i <= number.size() ) {
+			if ( r <= number.size() ) {
 
 				// if number >= diviser
-				if ( compare((std::string&)number.substr(0, i), diviser , true ) < NUMBER_2_BIGGER ) {
-					counter_number = number.substr(0, i);
+				if ( compare((std::string&)number.substr(0, r), diviser , true ) < NUMBER_2_BIGGER ) {
+					counter_number = number.substr(0, r);
 					break;
 				}
 
 			}
-			else {
+			else { // add zeros in number to suit diviser
+
+				if (!float_point_active) {
+					str_result.push_back('.');
+					float_point_active = true;
+				}
 
 				size_t f = 0;
 
-				while (count_object.second == "0") {
+				do {
 
 					number.push_back('0');
 
@@ -488,30 +515,33 @@ std::string div( std::string& number1, std::string& number2 ) {
 						str_result.push_back('0');
 					}
 
-					/*
-					if (!float_point_active) {
-						float_point_active = true;
-						str_result += "0.";
-					}
-					*/
-
 					count_object = how_much_in(number, diviser);
 					f++;
-				}
 
+				} while (count_object.second == "0");
+
+				dont_round    = true;
+				skip_counting = true;
+				break;
 			}
 
-			i++;
+			r++;
 		}
 				
 		// count how many in 
-		count_object = how_much_in( counter_number , diviser );
+		if( !skip_counting ) count_object = how_much_in( counter_number , diviser );
 
-		// just round the numbers range for good "sub"
-		if ( count_object.first.size() < number.size() ) {
+		if (!dont_round) {
 
-			for (size_t i = 0; i < (number.size() - count_object.first.size()); i++) {
-				count_object.first.push_back('0');
+			// just round the numbers range for good "sub"
+			if ( count_object.first.size() < number.size() ) {
+
+				size_t range_to_fill = number.size() - count_object.first.size();
+
+				for ( size_t z = 0; z < range_to_fill; z++ ) {
+					count_object.first.push_back('0');
+				}
+
 			}
 
 		}
@@ -523,6 +553,9 @@ std::string div( std::string& number1, std::string& number2 ) {
 		number = remove_zeros( (std::string&) sub( number , count_object.first ) );
 
 		loop++;
+		skip_counting = false;
+		dont_round = false;
+		r = diviser.size();
 	}
 
 	return str_result;
@@ -711,7 +744,7 @@ std::pair<std::string, std::string> how_much_in(std::string& target_number, std:
 
 		case  NUMBER_1_BIGGER: {
 
-			std::string previous_value;
+			std::string previous_value = used_number;
 			value = used_number;
 
 			for (size_t i = 2; ; i++) {
