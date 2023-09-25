@@ -74,7 +74,7 @@ size_t calc_float_position(std::string const& number1, std::string const& number
 // std::string setup_for_division(std::string& number1, std::string& number2);
 std::pair<std::string, std::string> how_much_in( std::string& target_number , std::string& used_number);
 
-std::string remove_zeros(std::string& target_number);
+std::string setup_for_division(std::string& target_number);
 bool still_not_zero(std::string const& target_number);
 /*
 	note :	all the math functions here "preforme math" logic "on numbers as strings"
@@ -438,10 +438,17 @@ std::string div( std::string& number1, std::string& number2 ) {
 	bool skip_counting = false;
 	bool dont_round = false;
 
-	std::string number  = remove_zeros(number1);
-	std::string diviser = remove_zeros(number2);
+	std::string number  = setup_for_division(number1);
+	std::string diviser = setup_for_division(number2);
 	
 	std::string counter_number = "0";
+
+	// check for output result sign => - & +
+	short output_sign = 0;
+	output_sign += (number1[0] == '-') ? 1 : 0;
+	output_sign += (number2[0] == '-') ? 1 : 0;
+
+	if (output_sign == 1) str_result += '-';
 
 	/*
 		check if there's any special case like "x/0"...
@@ -494,6 +501,8 @@ std::string div( std::string& number1, std::string& number2 ) {
 				// if number >= diviser
 				if ( compare((std::string&)number.substr(0, r), diviser , true ) < NUMBER_2_BIGGER ) {
 					counter_number = number.substr(0, r);
+
+					if (r == number.size()) dont_round = true;
 					break;
 				}
 
@@ -550,13 +559,15 @@ std::string div( std::string& number1, std::string& number2 ) {
 		str_result += count_object.second;
 
 		// subtract counted value from number for next cycle
-		number = remove_zeros( (std::string&) sub( number , count_object.first ) );
+		number = setup_for_division( (std::string&) sub( number , count_object.first ) );
 
 		loop++;
 		skip_counting = false;
 		dont_round = false;
 		r = diviser.size();
 	}
+
+	
 
 	return str_result;
 
@@ -771,12 +782,12 @@ std::pair<std::string, std::string> how_much_in(std::string& target_number, std:
 
 } // end of calc_float_position function
 
-// function to remove no needed zero's from numbers
-std::string remove_zeros(std::string& target_number) {
+// function to remove no needed char's like zero's and - + ...
+std::string setup_for_division(std::string& target_number) {
 
 	std::string new_str_number = "";
 
-	size_t i = 0;
+	size_t i = (target_number[0] == '-' || target_number[0] == '+') ? 1 : 0;
 	for ( ; i < (target_number.size() - 1) ; i++) {
 		if (target_number[i] != '0') break;
 	}
