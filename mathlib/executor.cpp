@@ -74,7 +74,7 @@ size_t calc_float_position(std::string const& number1, std::string const& number
 // std::string setup_for_division(std::string& number1, std::string& number2);
 std::pair<std::string, std::string> how_much_in( std::string& target_number , std::string& used_number);
 
-std::string setup_for_division(std::string& target_number);
+std::string setup_for_division(std::string& target_number , long long int &float_index);
 bool still_not_zero(std::string const& target_number);
 /*
 	note :	all the math functions here "preforme math" logic "on numbers as strings"
@@ -434,14 +434,20 @@ std::string div( std::string& number1, std::string& number2 ) {
 	std::string str_result = "";
 	std::pair<std::string, std::string> count_object; // used by "how_much_in" 
 	
+	long long int number_float_index  = -1; 
+	long long int diviser_float_index = -1;
+
 	bool float_point_active = false;
 	bool skip_counting = false;
 	bool dont_round = false;
 
-	std::string number  = setup_for_division(number1);
-	std::string diviser = setup_for_division(number2);
+	std::string number  = setup_for_division(number1 , number_float_index);
+	std::string diviser = setup_for_division(number2 , diviser_float_index);
 	
-	std::string counter_number = "0";
+	std::string chunk = "0"; // when we cut a part from "number" for division
+
+	// todo : round numbers if there's a float point
+
 
 	// check for output result sign => - & +
 	short output_sign = 0;
@@ -455,16 +461,16 @@ std::string div( std::string& number1, std::string& number2 ) {
 	*/ 
 
 	// if number / 0 => undefined
-	if (diviser == "0") return "undefined";
+	if (diviser == "0" || diviser == "-0") return "undefined";
 	
 	// if number / 1 => number
-	if (diviser == "1") return number;
+	if (diviser == "1" || diviser == "-1") return  (output_sign == 1) ? ("-" + number) : number;
 
 	// if 0 / diviser => 0
-	if (number == "0") return "0";
+	if (number == "0"  || number == "-0") return "0";
 
 	// if x / x => 1
-	if (number == diviser) return "1";
+	if (number == diviser) return (output_sign == 1) ? "-1" : "1";
  
 	// end of checking special cases ==============
 	
@@ -500,7 +506,7 @@ std::string div( std::string& number1, std::string& number2 ) {
 
 				// if number >= diviser
 				if ( compare((std::string&)number.substr(0, r), diviser , true ) < NUMBER_2_BIGGER ) {
-					counter_number = number.substr(0, r);
+					chunk = number.substr(0, r);
 
 					if (r == number.size()) dont_round = true;
 					break;
@@ -510,7 +516,15 @@ std::string div( std::string& number1, std::string& number2 ) {
 			else { // add zeros in number to suit diviser
 
 				if (!float_point_active) {
-					str_result.push_back('.');
+
+					if ( str_result.size() == 0 ) {
+						str_result += "0.";
+					}
+					else {
+						if (str_result[0] == '-' && str_result.size() == 1) str_result += "0.";
+						else str_result.push_back('.');
+					}
+
 					float_point_active = true;
 				}
 
@@ -538,7 +552,7 @@ std::string div( std::string& number1, std::string& number2 ) {
 		}
 				
 		// count how many in 
-		if( !skip_counting ) count_object = how_much_in( counter_number , diviser );
+		if( !skip_counting ) count_object = how_much_in( chunk , diviser );
 
 		if (!dont_round) {
 
@@ -559,7 +573,7 @@ std::string div( std::string& number1, std::string& number2 ) {
 		str_result += count_object.second;
 
 		// subtract counted value from number for next cycle
-		number = setup_for_division( (std::string&) sub( number , count_object.first ) );
+		number = setup_for_division( (std::string&) sub( number , count_object.first ) , number_float_index );
 
 		loop++;
 		skip_counting = false;
@@ -568,7 +582,6 @@ std::string div( std::string& number1, std::string& number2 ) {
 	}
 
 	
-
 	return str_result;
 
 } // end of div function
@@ -783,7 +796,7 @@ std::pair<std::string, std::string> how_much_in(std::string& target_number, std:
 } // end of calc_float_position function
 
 // function to remove no needed char's like zero's and - + ...
-std::string setup_for_division(std::string& target_number) {
+std::string setup_for_division(std::string& target_number , long long int& float_index) {
 
 	std::string new_str_number = "";
 
@@ -792,7 +805,10 @@ std::string setup_for_division(std::string& target_number) {
 		if (target_number[i] != '0') break;
 	}
 
-	for (; i < target_number.size(); i++) {
+	for ( ; i < target_number.size() ; i++ ) {
+		// catch float point index if target_number is float
+		if (target_number[i] == '.') float_index = i;
+		
 		new_str_number.push_back(target_number[i]);
 	}
 
