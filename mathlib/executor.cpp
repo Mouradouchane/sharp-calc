@@ -74,7 +74,8 @@ size_t calc_float_position(std::string const& number1, std::string const& number
 // std::string setup_for_division(std::string& number1, std::string& number2);
 std::pair<std::string, std::string> how_much_in( std::string& target_number , std::string& used_number);
 
-std::string setup_for_division(std::string& target_number , long long int &float_index);
+std::string setup_for_division(std::string& target_number);
+void balance_floats(std::string& number1, std::string& number2);
 bool still_not_zero(std::string const& target_number);
 /*
 	note :	all the math functions here "preforme math" logic "on numbers as strings"
@@ -434,20 +435,19 @@ std::string div( std::string& number1, std::string& number2 ) {
 	std::string str_result = "";
 	std::pair<std::string, std::string> count_object; // used by "how_much_in" 
 	
-	long long int number_float_index  = -1; 
-	long long int diviser_float_index = -1;
+	// long long int number_float_index  = -1; 
+	// long long int diviser_float_index = -1;
 
 	bool float_point_active = false;
 	bool skip_counting = false;
 	bool dont_round = false;
 
-	std::string number  = setup_for_division(number1 , number_float_index);
-	std::string diviser = setup_for_division(number2 , diviser_float_index);
+	std::string number  = setup_for_division(number1);
+	std::string diviser = setup_for_division(number2);
 	
+	balance_floats(number, diviser);
+
 	std::string chunk = "0"; // when we cut a part from "number" for division
-
-	// todo : round numbers if there's a float point
-
 
 	// check for output result sign => - & +
 	short output_sign = 0;
@@ -573,7 +573,7 @@ std::string div( std::string& number1, std::string& number2 ) {
 		str_result += count_object.second;
 
 		// subtract counted value from number for next cycle
-		number = setup_for_division( (std::string&) sub( number , count_object.first ) , number_float_index );
+		number = setup_for_division( (std::string&) sub( number , count_object.first ) );
 
 		loop++;
 		skip_counting = false;
@@ -796,7 +796,7 @@ std::pair<std::string, std::string> how_much_in(std::string& target_number, std:
 } // end of calc_float_position function
 
 // function to remove no needed char's like zero's and - + ...
-std::string setup_for_division(std::string& target_number , long long int& float_index) {
+std::string setup_for_division(std::string& target_number ) {
 
 	std::string new_str_number = "";
 
@@ -806,14 +806,93 @@ std::string setup_for_division(std::string& target_number , long long int& float
 	}
 
 	for ( ; i < target_number.size() ; i++ ) {
-		// catch float point index if target_number is float
-		if (target_number[i] == '.') float_index = i;
-		
 		new_str_number.push_back(target_number[i]);
 	}
 
 	return new_str_number;
 } // end of remove_zeros
+
+
+// this function used to get rid of float's point and switch numbers to integer's
+// because integer's fit well with long division 
+void balance_floats(std::string& number1, std::string& number2) {
+
+	long long int n1_float_index = -1;
+	long long int n2_float_index = -1;
+
+	// search for '.' float point 
+	for (size_t a = 0; a < number1.size(); a += 1) {
+
+		if (number1[a] == '.') {
+			n1_float_index = a;
+			break;
+		}
+
+	}
+
+	for (size_t a = 0; a < number2.size(); a += 1) {
+
+		if (number2[a] == '.') {
+			n2_float_index = a;
+			break;
+		}
+
+	}
+	// end of search 
+
+	n1_float_index = (n1_float_index == -1) ? 0 : number1.size() - n1_float_index;
+	n2_float_index = (n2_float_index == -1) ? 0 : number2.size() - n2_float_index;
+
+	size_t range_to_balance = (n1_float_index > n2_float_index) ? n1_float_index : n2_float_index;
+
+	std::string process_number;
+	bool start_counting_for_range = false;
+
+	// process number1 
+	for (size_t i = 0 ; i < number1.size(); i++) {
+
+		if (number1[i] == '.') {
+			start_counting_for_range = true;
+			continue;
+		}
+		
+		if (start_counting_for_range) range_to_balance -= 1;
+
+		process_number.push_back( number1[i] );
+	}
+	for (size_t i = 0; i < range_to_balance; i++) {
+		process_number.push_back('0');
+	}
+
+	// copy processed result 
+	number1 = process_number;
+
+	// clean for number2
+
+	process_number = "";
+	start_counting_for_range = false;
+	range_to_balance  = (n1_float_index > n2_float_index) ? n1_float_index : n2_float_index;
+
+	// process number2 
+	for (size_t i = 0; i < number2.size(); i++) {
+		
+		if (number2[i] == '.') {
+			start_counting_for_range = true;
+			continue;
+		}
+
+		if (start_counting_for_range) range_to_balance -= 1;
+
+		process_number.push_back(number2[i]);
+	}
+	for (size_t i = 0; i < range_to_balance; i++) {
+		process_number.push_back('0');
+	}
+
+	// copy processed result 
+	number2 = process_number;
+
+} // end of balanc_floats function
 
 bool still_not_zero(std::string const& target_number) {
 
