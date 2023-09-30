@@ -46,6 +46,11 @@
 	#include <vector>
 #endif
 
+#ifndef _analysing
+	#define _analysing
+	#include "analysing.cpp"
+#endif
+
 #define NEGATIVE_VALUE 0
 #define POSITIVE_VALUE 1 
 #define UNSPECIFIED_VALUE 2
@@ -74,7 +79,7 @@ size_t calc_float_position(std::string const& number1, std::string const& number
 // std::string setup_for_division(std::string& number1, std::string& number2);
 std::pair<std::string, std::string> how_much_in( std::string& target_number , std::string& used_number);
 
-std::string setup_for_division(std::string& target_number);
+std::string setup_for_division(std::string& target_number , bool int_setup);
 void balance_floats(std::string& number1, std::string& number2);
 bool still_not_zero(std::string const& target_number);
 /*
@@ -442,12 +447,11 @@ std::string div( std::string& number1, std::string& number2 ) {
 	bool skip_counting = false;
 	bool dont_round = false;
 
-	std::string number  = setup_for_division(number1);
-	std::string diviser = setup_for_division(number2);
-	
-	balance_floats(number, diviser);
+	bool is_number1_float = (is_float(number1) == INVALID_VALUE) ? false : true ;
+	bool is_number2_float = (is_float(number2) == INVALID_VALUE) ? false : true ;
 
-	std::string chunk = "0"; // when we cut a part from "number" for division
+	std::string number  = setup_for_division(number1 , is_number1_float);
+	std::string diviser = setup_for_division(number2 , is_number2_float);
 
 	// check for output result sign => - & +
 	short output_sign = 0;
@@ -458,23 +462,36 @@ std::string div( std::string& number1, std::string& number2 ) {
 
 	/*
 		check if there's any special case like "x/0"...
-	*/ 
+	*/
 
-	// if number / 0 => undefined
-	if (diviser == "0" || diviser == "-0") return "undefined";
-	
+	// if number / 0 => infinity
+	if (diviser == "0" || diviser == "-0" || diviser == "0.0" || diviser == "-0.0") {
+		return (output_sign == 1) ? "-infinity" : "infinity";
+	}
 	// if number / 1 => number
-	if (diviser == "1" || diviser == "-1") return  (output_sign == 1) ? ("-" + number) : number;
-
+	if (diviser == "1" || diviser == "-1" || diviser == "-1.0" || diviser == "1.0") {
+		return  (output_sign == 1) ? ("-" + number) : number;
+	}
 	// if 0 / diviser => 0
-	if (number == "0"  || number == "-0") return "0";
+	if (number == "0" || number == "-0" || number == "0.0" || number == "-0.0" ) return "0";
 
 	// if x / x => 1
 	if (number == diviser) return (output_sign == 1) ? "-1" : "1";
- 
-	// end of checking special cases ==============
-	
 
+	// end of checking special cases ==============
+
+
+	/*
+		balance the numbers if there's a float
+	*/
+
+	if (is_number1_float || is_number2_float) {
+		balance_floats(number, diviser);
+	}
+
+	std::string chunk = "0"; // when we cut a part from "number" for division
+
+	/*
 	// if small / big , result will be "0,..."
 	if (diviser.size() > number.size()) {
 
@@ -484,13 +501,13 @@ std::string div( std::string& number1, std::string& number2 ) {
 		str_result += "0.";
 		number.push_back('0');
 
-		for ( size_t i = 1; i < needed_zeros; i++ ) {
+		for ( size_t i = 1; i <= needed_zeros; i++ ) {
 			number.push_back('0');
 			str_result.push_back('0');
 		}
 
 	}
-	
+	*/
 
 	// division cycle
 
@@ -515,30 +532,25 @@ std::string div( std::string& number1, std::string& number2 ) {
 			}
 			else { // add zeros in number to suit diviser
 
-				if (!float_point_active) {
-
-					if ( str_result.size() == 0 ) {
-						str_result += "0.";
-					}
-					else {
-						if (str_result[0] == '-' && str_result.size() == 1) str_result += "0.";
-						else str_result.push_back('.');
-					}
-
-					float_point_active = true;
-				}
-
 				size_t f = 0;
 
 				do {
 
-					number.push_back('0');
+					count_object = how_much_in(number, diviser);
 
-					if (f > 0) {
-						str_result.push_back('0');
+					if (count_object.second == "0") {
+
+						if (!float_point_active) {
+							str_result += "0.";
+							float_point_active = true;
+						}
+
+						number.push_back('0');
+
+						if (f > 0) str_result.push_back('0');
+						
 					}
 
-					count_object = how_much_in(number, diviser);
 					f++;
 
 				} while (count_object.second == "0");
@@ -557,9 +569,9 @@ std::string div( std::string& number1, std::string& number2 ) {
 		if (!dont_round) {
 
 			// just round the numbers range for good "sub"
-			if ( count_object.first.size() < number.size() ) {
+			if ( count_object.first.size() <= number.size() ) {
 
-				size_t range_to_fill = number.size() - count_object.first.size();
+				size_t range_to_fill = number.size() - r;
 
 				for ( size_t z = 0; z < range_to_fill; z++ ) {
 					count_object.first.push_back('0');
@@ -569,11 +581,11 @@ std::string div( std::string& number1, std::string& number2 ) {
 
 		}
 
-		// update final result 
-		str_result += count_object.second;
+		// update final result
+ 		str_result += count_object.second;
 
 		// subtract counted value from number for next cycle
-		number = setup_for_division( (std::string&) sub( number , count_object.first ) );
+		number = setup_for_division((std::string&)sub(number, count_object.first) , false );
 
 		loop++;
 		skip_counting = false;
@@ -796,16 +808,49 @@ std::pair<std::string, std::string> how_much_in(std::string& target_number, std:
 } // end of calc_float_position function
 
 // function to remove no needed char's like zero's and - + ...
-std::string setup_for_division(std::string& target_number ) {
+std::string setup_for_division(std::string& target_number , bool float_setup = false) {
 
 	std::string new_str_number = "";
 
+	// first the filter start from first digit going to 'none zero value' or 'float point .'
 	size_t i = (target_number[0] == '-' || target_number[0] == '+') ? 1 : 0;
+
 	for ( ; i < (target_number.size() - 1) ; i++) {
-		if (target_number[i] != '0') break;
+
+		if (target_number[i] == '0') continue;
+		else {
+			if (target_number[i] == '.') {
+				i -= 1;
+			}
+			break;
+		}
+
 	}
 
-	for ( ; i < target_number.size() ; i++ ) {
+	size_t r = target_number.size() - 1;
+
+	if (float_setup) {
+
+		// note : only for integers !!!
+		// second filter like the first but start from last digit
+
+		for (; r > i; r -= 1) {
+
+			if (target_number[r] == '0') continue;
+			else {
+
+				if (target_number[r] == '.') {
+					r += 1;
+				}
+
+				break;
+			}
+
+		}
+	}
+
+	// copy values
+	for ( ; i <= r ; i++ ) {
 		new_str_number.push_back(target_number[i]);
 	}
 
@@ -840,8 +885,8 @@ void balance_floats(std::string& number1, std::string& number2) {
 	}
 	// end of search 
 
-	n1_float_index = (n1_float_index == -1) ? 0 : number1.size() - n1_float_index;
-	n2_float_index = (n2_float_index == -1) ? 0 : number2.size() - n2_float_index;
+	n1_float_index = (n1_float_index == -1) ? 0 : number1.size() - n1_float_index - 1;
+	n2_float_index = (n2_float_index == -1) ? 0 : number2.size() - n2_float_index - 1;
 
 	size_t range_to_balance = (n1_float_index > n2_float_index) ? n1_float_index : n2_float_index;
 
