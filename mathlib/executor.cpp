@@ -445,7 +445,6 @@ std::string div( std::string& number1, std::string& number2 ) {
 
 	bool float_point_active = false;
 	bool skip_counting = false;
-	bool dont_round = false;
 
 	bool is_number1_float = (is_float(number1) == INVALID_VALUE) ? false : true ;
 	bool is_number2_float = (is_float(number2) == INVALID_VALUE) ? false : true ;
@@ -489,86 +488,93 @@ std::string div( std::string& number1, std::string& number2 ) {
 		balance_floats(number, diviser);
 	}
 
-	std::string chunk = "0"; // when we cut a part from "number" for division
-
-	/*
-	// if small / big , result will be "0,..."
-	if (diviser.size() > number.size()) {
-
-		float_point_active  = true;
-		size_t needed_zeros = diviser.size() - number.size();
-
-		str_result += "0.";
-		number.push_back('0');
-
-		for ( size_t i = 1; i <= needed_zeros; i++ ) {
-			number.push_back('0');
-			str_result.push_back('0');
-		}
-
-	}
-	*/
-
 	// division cycle
 
+	std::string chunk = "0"; // when we cut a part from "number" for division
 	size_t loop = 0; 
 	size_t r = diviser.size();
+	size_t added_zeros = 0;
 
 	while ( still_not_zero(number) && loop < MAX_DIVISION_LOOP ) {
 
-		// setup values 
-		while (true) {
+		// get a chunck for sub
 
-			if ( r <= number.size() ) {
+		if (r < number.size()) {
+			chunk = number.substr(0, r);
 
-				// if number >= diviser
-				if ( compare((std::string&)number.substr(0, r), diviser , true ) < NUMBER_2_BIGGER ) {
-					chunk = number.substr(0, r);
+			if (compare(chunk, diviser, true) != NUMBER_2_BIGGER) {
+				goto count_scope;
+			}
+			else {
+				r += 1;
+				continue;
+			}
+		}
+		if (r == number.size()) {
+			chunk = number;
+			goto count_scope;
+		}
+		if (r > number.size()) {
 
-					if (r == number.size()) dont_round = true;
-					break;
+			if (!float_point_active) {
+				str_result += ".";
+				float_point_active = true;
+			}
+
+			chunk = number;
+
+			do {
+
+				if (added_zeros > 1) {
+					str_result += "0";
 				}
 
-			}
-			else { // add zeros in number to suit diviser
+				chunk += "0";
+				added_zeros += 1;
 
-				size_t f = 0;
+				count_object = how_much_in(chunk, diviser);
 
-				do {
+			} while (count_object.second == "0");
 
-					count_object = how_much_in(number, diviser);
+			number = chunk;
+			goto round_scope;
+		}
 
-					if (count_object.second == "0") {
 
-						if (!float_point_active) {
-							str_result += "0.";
-							float_point_active = true;
-						}
+		// count how many "diviser value" in the current "chunk"
+		count_scope : {
 
-						number.push_back('0');
+			count_object = how_much_in(chunk, diviser);
 
-						if (f > 0) str_result.push_back('0');
-						
+			if (count_object.second == "0") {
+
+				if (r == chunk.size()) {
+					chunk += "0";
+					added_zeros += 1;
+	
+					if (added_zeros > 1) str_result += "0";
+					goto count_scope;
+				}
+				else {
+					if (!float_point_active) {
+						str_result += ".";
+						float_point_active = true;
 					}
 
-					f++;
+				}
 
-				} while (count_object.second == "0");
-
-				dont_round    = true;
-				skip_counting = true;
-				break;
+				number = chunk;
+				// continue;
+			}
+			else {
+				number = chunk;
+				goto round_scope;
 			}
 
-			r++;
 		}
-				
-		// count how many in 
-		if( !skip_counting ) count_object = how_much_in( chunk , diviser );
 
-		if (!dont_round) {
-
-			// just round the numbers range for good "sub"
+		round_scope: {
+			// round the numbers ranges for good "sub"
 			if ( count_object.first.size() <= number.size() ) {
 
 				size_t range_to_fill = number.size() - r;
@@ -578,19 +584,20 @@ std::string div( std::string& number1, std::string& number2 ) {
 				}
 
 			}
-
 		}
 
-		// update final result
- 		str_result += count_object.second;
+		sub_scope: {
 
-		// subtract counted value from number for next cycle
-		number = setup_for_division((std::string&)sub(number, count_object.first) , false );
+			// update final result
+ 			str_result += count_object.second;
 
-		loop++;
-		skip_counting = false;
-		dont_round = false;
-		r = diviser.size();
+			// subtract counted value from number for next cycle
+			number = setup_for_division( (std::string&)sub(number, count_object.first) , false );
+
+			r = diviser.size();
+			loop++;
+		}
+
 	}
 
 	
