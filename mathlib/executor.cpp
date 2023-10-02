@@ -494,6 +494,7 @@ std::string div( std::string& number1, std::string& number2 ) {
 	size_t loop = 0; 
 	size_t r = diviser.size();
 	size_t added_zeros = 0;
+	bool round = true;
 
 	while ( still_not_zero(number) && loop < MAX_DIVISION_LOOP ) {
 
@@ -510,10 +511,26 @@ std::string div( std::string& number1, std::string& number2 ) {
 				continue;
 			}
 		}
+
 		if (r == number.size()) {
 			chunk = number;
-			goto count_scope;
+			round = false;
+
+			count_object = how_much_in(chunk, diviser);
+
+			if (count_object.second == "0") {
+
+				str_result += "0";
+				added_zeros += 1;
+
+				chunk += "0";
+
+				goto count_scope;
+			}
+			else goto sub_scope;
+
 		}
+
 		if (r > number.size()) {
 
 			if (!float_point_active) {
@@ -525,7 +542,7 @@ std::string div( std::string& number1, std::string& number2 ) {
 
 			do {
 
-				if (added_zeros > 1) {
+				if (added_zeros > 0) {
 					str_result += "0";
 				}
 
@@ -537,7 +554,7 @@ std::string div( std::string& number1, std::string& number2 ) {
 			} while (count_object.second == "0");
 
 			number = chunk;
-			goto round_scope;
+			goto sub_scope;
 		}
 
 
@@ -548,26 +565,26 @@ std::string div( std::string& number1, std::string& number2 ) {
 
 			if (count_object.second == "0") {
 
-				if (r == chunk.size()) {
-					chunk += "0";
-					added_zeros += 1;
-	
-					if (added_zeros > 1) str_result += "0";
-					goto count_scope;
-				}
-				else {
+				// if (r == chunk.size()) {
+				chunk += "0";
+				added_zeros += 1;
+
+				//number = chunk;
+
+				if (added_zeros > 1) {
+
 					if (!float_point_active) {
 						str_result += ".";
 						float_point_active = true;
 					}
+					else str_result += "0";
 
 				}
 
-				number = chunk;
-				// continue;
+				goto count_scope;
 			}
 			else {
-				number = chunk;
+				// number = chunk;
 				goto round_scope;
 			}
 
@@ -575,9 +592,9 @@ std::string div( std::string& number1, std::string& number2 ) {
 
 		round_scope: {
 			// round the numbers ranges for good "sub"
-			if ( count_object.first.size() <= number.size() ) {
+			if ( count_object.first.size() < number.size() && round ) {
 
-				size_t range_to_fill = number.size() - r;
+				size_t range_to_fill = number.size() - ( ( added_zeros == 0 ) ? r : count_object.first.size() );
 
 				for ( size_t z = 0; z < range_to_fill; z++ ) {
 					count_object.first.push_back('0');
@@ -596,6 +613,8 @@ std::string div( std::string& number1, std::string& number2 ) {
 
 			r = diviser.size();
 			loop++;
+			added_zeros = 0;
+			round = true;
 		}
 
 	}
