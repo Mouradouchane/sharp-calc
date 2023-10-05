@@ -428,9 +428,25 @@ std::string mult( std::string& number1, std::string& number2 ) {
 } // end of mult function
 
 
-// todo !!!
+// function to rise number1 to the target power using add & mult functions
 std::string pow( std::string& number1, std::string& power ) {
-	return "";
+
+	std::string power_value = "1";
+	std::string temp_power = "0";
+
+	std::string copy_power = power;
+	copy_power.reserve(); // reverse once for direct subtract operation
+	
+	std::string one = "1";
+	while ( compare(copy_power , one , true) != NUMBER_2_BIGGER ) {
+
+		power_value = mult(power_value, number1);
+
+		// decrease power by on
+		copy_power  = sub(copy_power, one , true);
+	}
+
+	return power_value;
 } // end of pow function
 
 

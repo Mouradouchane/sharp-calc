@@ -233,6 +233,11 @@ extern "C" __declspec(dllexport) std::string debug_div(std::string a, std::strin
 	return div(a, b);
 }
 
+extern "C" __declspec(dllexport) std::string debug_pow(std::string a, std::string b) {
+
+	return pow(a, b);
+}
+
 extern "C" __declspec(dllexport) void debug_setup_numbers(std::string & number1, std::string & number2) {
 
 	setup_numbers( number1 , number2 );

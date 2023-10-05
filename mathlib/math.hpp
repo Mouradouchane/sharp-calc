@@ -69,6 +69,8 @@ extern "C" __declspec(dllexport) std::string debug_sub(std::string a, std::strin
 
 extern "C" __declspec(dllexport) std::string debug_mult(std::string a, std::string b);
 
+extern "C" __declspec(dllexport) std::string debug_pow(std::string a, std::string b);
+
 extern "C" __declspec(dllexport) std::string debug_div(std::string a, std::string b);
 
 extern "C" __declspec(dllexport) void debug_setup_numbers(std::string& number1, std::string& number2);
