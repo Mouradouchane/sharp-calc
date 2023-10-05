@@ -500,8 +500,8 @@ std::string div( std::string& number1, std::string& number2 ) {
 
 		// get a chunck for sub
 
-		if (r < number.size()) {
-			chunk = number.substr(0, r);
+		if (r <= number.size()) {
+			chunk = number; // .substr(0, r);
 
 			if (compare(chunk, diviser, true) != NUMBER_2_BIGGER) {
 				goto count_scope;
@@ -511,7 +511,7 @@ std::string div( std::string& number1, std::string& number2 ) {
 				continue;
 			}
 		}
-
+		/*
 		if (r == number.size()) {
 			chunk = number;
 			round = false;
@@ -520,17 +520,20 @@ std::string div( std::string& number1, std::string& number2 ) {
 
 			if (count_object.second == "0") {
 
-				str_result += "0";
-				added_zeros += 1;
 
+				str_result += (added_zeros == 0 && !float_point_active) ? "0." : "0";
+				added_zeros += 1;
+				float_point_active = true;
 				chunk += "0";
 
 				goto count_scope;
 			}
-			else goto sub_scope;
-
+			else {
+				number = chunk;
+				goto sub_scope;
+			}
 		}
-
+		*/
 		if (r > number.size()) {
 
 			if (!float_point_active) {
@@ -585,8 +588,12 @@ std::string div( std::string& number1, std::string& number2 ) {
 			}
 			else {
 				// number = chunk;
-				goto round_scope;
+				if (chunk.size() == number.size()) {
+					goto sub_scope;
+				}
+				else goto round_scope;
 			}
+			
 
 		}
 
