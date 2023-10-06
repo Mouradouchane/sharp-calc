@@ -359,18 +359,18 @@ std::string mult( std::string& number1, std::string& number2 ) {
 
 	// x * 0 or 0 * x ====> 0
 	if (number1 == "0" || number1 == "0.0" || number1 == "-0" || number1 == "-0.0") {
-		return (number1_type == NEGATIVE_VALUE) ? "-0" : "0";
+		return (negative_result) ? "-0" : "0";
 	}
 	if (number2 == "0" || number2 == "0.0" || number2 == "-0" || number2 == "-0.0") {
-		return (number2_type == NEGATIVE_VALUE) ? "-0" : "0";
+		return (negative_result) ? "-0" : "0";
 	}
 
-	// x * 1 or 1 * x =====> 1
+	// x * 1 or 1 * x ====> x
 	if (number1 == "1" || number1 == "1.0" || number1 == "-1" || number1 == "-1.0") {
-		return (number1_type == NEGATIVE_VALUE) ? "-1" : "1";
+		return (negative_result) ? "-" + number2 : number2;
 	}
 	if (number2 == "1" || number2 == "1.0" || number2 == "-1" || number2 == "-1.0") {
-		return (number2_type == NEGATIVE_VALUE) ? "-1" : "1";
+		return (negative_result) ? "-" + number1 : number1;
 	}
 
 	// reverse numbers -> 'easy to deal with em'
