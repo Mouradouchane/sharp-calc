@@ -71,17 +71,17 @@ std::string div( std::string& number1, std::string& number2);
 std::string rem( std::string& number1, std::string& number2);
 
 // assistance functions
-short compare(std::string & number1, std::string & number2 , bool );
-void setup_numbers(std::string& number1, std::string& number2);
+short compare(std::string & number1, std::string & number2 , bool);
+
+void setup_for_add_or_sub(std::string& number1, std::string& number2);
+std::string setup_for_division(std::string& target_number , bool float_setup);
 
 size_t calc_float_position(std::string const& number1, std::string const& number2);
-
-// std::string setup_for_division(std::string& number1, std::string& number2);
 std::pair<std::string, std::string> how_much_in( std::string& target_number , std::string& used_number);
-
-std::string setup_for_division(std::string& target_number , bool int_setup);
 void balance_floats(std::string& number1, std::string& number2);
 bool still_not_zero(std::string const& target_number);
+
+
 /*
 	note :	all the math functions here "preforme math" logic "on numbers as strings"
 			in that way we can handle big integers and float's
@@ -96,7 +96,7 @@ std::string add( std::string &number1 , std::string &number2 , bool dont_setup =
 	bool negative_plus_positive = ((!number1_type && number2_type) || (number1_type && !number2_type)) ? true : false;
 
 	if (!dont_setup) {
-		setup_numbers(number1, number2);
+		setup_for_add_or_sub(number1, number2);
 	}
 
 	short cp = compare(number1, number2 , false);
@@ -213,7 +213,7 @@ std::string sub( std::string& number1, std::string& number2 , bool dont_setup = 
 	short number2_type = (number2[0] == '-') ? NEGATIVE_VALUE : (number2[0] == '+') ? POSITIVE_VALUE : UNSPECIFIED_VALUE;
 
 	if (!dont_setup) {
-		setup_numbers(number1, number2);
+		setup_for_add_or_sub(number1, number2);
 	}
 
 	short cp = compare(number1 , number2 , false);
@@ -353,6 +353,26 @@ std::string mult( std::string& number1, std::string& number2 ) {
 	// if -a * b or -b * a ==> -result
 	bool negative_result = (number1_type > 0 && number2_type == 0) || (number1_type == 0 && number2_type > 0) ? true : false;
 
+	// filter against well known operations like : x * 0 , x * 1 ; before you start to progress
+	number1 = setup_for_division(number1 , false);
+	number2 = setup_for_division(number2 , false);
+
+	// x * 0 or 0 * x ====> 0
+	if (number1 == "0" || number1 == "0.0" || number1 == "-0" || number1 == "-0.0") {
+		return (number1_type == NEGATIVE_VALUE) ? "-0" : "0";
+	}
+	if (number2 == "0" || number2 == "0.0" || number2 == "-0" || number2 == "-0.0") {
+		return (number2_type == NEGATIVE_VALUE) ? "-0" : "0";
+	}
+
+	// x * 1 or 1 * x =====> 1
+	if (number1 == "1" || number1 == "1.0" || number1 == "-1" || number1 == "-1.0") {
+		return (number1_type == NEGATIVE_VALUE) ? "-1" : "1";
+	}
+	if (number2 == "1" || number2 == "1.0" || number2 == "-1" || number2 == "-1.0") {
+		return (number2_type == NEGATIVE_VALUE) ? "-1" : "1";
+	}
+
 	// reverse numbers -> 'easy to deal with em'
 	std::reverse(number1.begin(), number1.end());
 	std::reverse(number2.begin(), number2.end());
@@ -462,8 +482,8 @@ std::string div( std::string& number1, std::string& number2 ) {
 	bool float_point_active = false;
 	bool skip_counting = false;
 
-	bool is_number1_float = (is_float(number1) == INVALID_VALUE) ? false : true ;
-	bool is_number2_float = (is_float(number2) == INVALID_VALUE) ? false : true ;
+	bool is_number1_float = (is_float(number1) == INVALID_VALUE) ? false : true;
+	bool is_number2_float = (is_float(number2) == INVALID_VALUE) ? false : true;
 
 	std::string number  = setup_for_division(number1 , is_number1_float);
 	std::string diviser = setup_for_division(number2 , is_number2_float);
@@ -648,9 +668,12 @@ std::string div( std::string& number1, std::string& number2 ) {
 } // end of div function
 
 
-
+// note this function use div function to preforme reminder operation
 std::string rem( std::string& number1, std::string& number2 ) {
-	return "";
+
+	std::string rem_value = "";
+
+	return rem_value;
 }
 
 
@@ -715,7 +738,7 @@ short compare(std::string & number1, std::string & number2 , bool reverse_then_c
 } // end of compare function
 
 // function to setup numbers and make them ready for the calculation
-void setup_numbers(std::string& number1, std::string& number2) {
+void setup_for_add_or_sub(std::string& number1, std::string& number2) {
 
 	short numbers_case = 0;
 
@@ -861,6 +884,18 @@ std::string setup_for_division(std::string& target_number , bool float_setup = f
 
 	std::string new_str_number = "";
 
+	// check if there's a "float point" in the number 
+	bool float_point_found = false;
+
+	for (size_t i = 0; i < target_number.size(); i += 1) {
+
+		if (target_number[i] == '.') {
+			float_point_found = true;
+			break;
+		}
+
+	}
+
 	// first the filter start from first digit going to 'none zero value' or 'float point .'
 	size_t i = (target_number[0] == '-' || target_number[0] == '+') ? 1 : 0;
 
@@ -878,10 +913,10 @@ std::string setup_for_division(std::string& target_number , bool float_setup = f
 
 	size_t r = target_number.size() - 1;
 
-	if (float_setup) {
+	if (float_setup && float_point_found) {
 
-		// note : only for integers !!!
-		// second filter like the first but start from last digit
+		// note : only for "float point" numbers !!!
+		// this second filter is like the first but it start from last digit
 
 		for (; r > i; r -= 1) {
 
