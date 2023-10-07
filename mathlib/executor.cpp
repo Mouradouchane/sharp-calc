@@ -74,7 +74,7 @@ std::string rem( std::string& number1, std::string& number2);
 short compare(std::string & number1, std::string & number2 , bool);
 
 void setup_for_add_or_sub(std::string& number1, std::string& number2);
-std::string setup_for_division(std::string& target_number , bool float_setup);
+std::string setup_for_div_or_mult(std::string& target_number);
 
 size_t calc_float_position(std::string const& number1, std::string const& number2);
 std::pair<std::string, std::string> how_much_in( std::string& target_number , std::string& used_number);
@@ -354,8 +354,8 @@ std::string mult( std::string& number1, std::string& number2 ) {
 	bool negative_result = (number1_type > 0 && number2_type == 0) || (number1_type == 0 && number2_type > 0) ? true : false;
 
 	// filter against well known operations like : x * 0 , x * 1 ; before you start to progress
-	number1 = setup_for_division(number1 , false);
-	number2 = setup_for_division(number2 , false);
+	number1 = setup_for_div_or_mult(number1);
+	number2 = setup_for_div_or_mult(number2);
 
 	// x * 0 or 0 * x ====> 0
 	if (number1 == "0" || number1 == "0.0" || number1 == "-0" || number1 == "-0.0") {
@@ -392,7 +392,7 @@ std::string mult( std::string& number1, std::string& number2 ) {
 	short n_result = 0; // temp result 
 
 	// multiplication process
-	for (size_t i = 0 , z = 0; i < number1.size(); i++ , z++ ) {
+	for (size_t i = 0 , z = 0; i < number1.size(); i++ ) {
 
 		if (number1[i] == '.') continue;
 		
@@ -423,6 +423,7 @@ std::string mult( std::string& number1, std::string& number2 ) {
 
 		if (carry > 0) temp_result.push_back( std::to_string(carry)[0] );
 		carry = 0;
+		z += 1;
 		results.push_back(temp_result);
 
 	}
@@ -449,24 +450,93 @@ std::string mult( std::string& number1, std::string& number2 ) {
 
 
 // function to rise number1 to the target power using add & mult functions
-std::string pow( std::string& number1, std::string& power ) {
+std::string pow( std::string& target_number , std::string& exponent_power ) {
 
-	std::string power_value = "1";
-	std::string temp_power = "0";
+	short number_type   = (target_number[0] == '-')  ? NEGATIVE_VALUE : (target_number[0]  == '+') ? POSITIVE_VALUE : UNSPECIFIED_VALUE;
+	short exponent_type = (exponent_power[0] == '-') ? NEGATIVE_VALUE : (exponent_power[0] == '+') ? POSITIVE_VALUE : UNSPECIFIED_VALUE;
 
-	std::string copy_power = power;
-	copy_power.reserve(); // reverse once for direct subtract operation
-	
-	std::string one = "1";
-	while ( compare(copy_power , one , true) != NUMBER_2_BIGGER ) {
+	// note : we gonna preforme different calculations based on the numbers signs => positive or negative .
+	// based on this variable we will decide .
+	short nums_case = 0;
+	nums_case += ( number_type  == NEGATIVE_VALUE) ? 1 : 0;
+	nums_case += (exponent_type == NEGATIVE_VALUE) ? 1 : 0;
 
-		power_value = mult(power_value, number1);
+	std::string number = setup_for_div_or_mult(target_number);
+	std::string power  = setup_for_div_or_mult(exponent_power);
 
-		// decrease power by on
-		copy_power  = sub(copy_power, one , true);
+	// todo : check against the exceptional case like "x**1 , x**0 ,..."
+
+	std::string str_result = "1";
+
+	std::string one = "1"; // just for decreasing "power" in loop
+
+	// power process
+	switch (nums_case) {
+
+		case 0 : { // positive ** positive
+
+			while (compare(power, one, true) < NUMBER_2_BIGGER) {
+
+				// multiplay value by the power then decrease power by on
+				str_result = mult(str_result, target_number);
+				power = sub(power, one, false);
+
+			}
+
+		} 
+		break;
+
+		case 1 : { // on of them negative 
+
+			// target_number is negative 
+			if (number_type == NEGATIVE_VALUE) {
+
+				while (compare(power, one, true) < NUMBER_2_BIGGER) {
+
+					// multiplay value by the power then decrease power by on
+					str_result = mult(str_result, number);
+					power = sub(power, one, false);
+
+				}
+
+			}
+			else { // exponent is negative
+
+				number = div(one, number);
+
+				while (compare(power, one, true) < NUMBER_2_BIGGER) {
+
+					// multiplay value by the power then decrease power by on
+					str_result = mult(str_result, number);
+					power = sub(power, one, false);
+
+				}
+
+			}
+
+		}
+		break;
+
+		case 2 : { // both of them negative
+
+			number = div(one, number);
+
+			while (compare(power, one, true) < NUMBER_2_BIGGER) {
+
+				// multiplay value by the power then decrease power by on
+				str_result = mult(str_result, number);
+				power = sub(power, one, false);
+
+			}
+
+		}
+		break;
+
 	}
 
-	return power_value;
+
+	return str_result;
+
 } // end of pow function
 
 
@@ -476,17 +546,14 @@ std::string div( std::string& number1, std::string& number2 ) {
 	std::string str_result = "";
 	std::pair<std::string, std::string> count_object; // used by "how_much_in" 
 	
-	// long long int number_float_index  = -1; 
-	// long long int diviser_float_index = -1;
-
 	bool float_point_active = false;
 	bool skip_counting = false;
 
 	bool is_number1_float = (is_float(number1) == INVALID_VALUE) ? false : true;
 	bool is_number2_float = (is_float(number2) == INVALID_VALUE) ? false : true;
 
-	std::string number  = setup_for_division(number1 , is_number1_float);
-	std::string diviser = setup_for_division(number2 , is_number2_float);
+	std::string number  = setup_for_div_or_mult(number1);
+	std::string diviser = setup_for_div_or_mult(number2);
 
 	// check for output result sign => - & +
 	short output_sign = 0;
@@ -652,7 +719,7 @@ std::string div( std::string& number1, std::string& number2 ) {
  			str_result += count_object.second;
 
 			// subtract counted value from number for next cycle
-			number = setup_for_division( (std::string&)sub(number, count_object.first) , false );
+			number = setup_for_div_or_mult( (std::string&)sub(number, count_object.first) );
 
 			r = diviser.size();
 			loop++;
@@ -662,7 +729,14 @@ std::string div( std::string& number1, std::string& number2 ) {
 
 	}
 
-	
+	// avoid "-.xxxx" or ".xxx"
+	if (str_result[0] == '.') {
+		str_result.insert(0, "0");
+	}
+	else if ( str_result[0] == '-' && str_result[0] == '.' ) {
+		str_result.insert(1, "0");
+	}
+
 	return str_result;
 
 } // end of div function
@@ -880,7 +954,7 @@ std::pair<std::string, std::string> how_much_in(std::string& target_number, std:
 } // end of calc_float_position function
 
 // function to remove no needed char's like zero's and - + ...
-std::string setup_for_division(std::string& target_number , bool float_setup = false) {
+std::string setup_for_div_or_mult(std::string& target_number) {
 
 	std::string new_str_number = "";
 
@@ -913,7 +987,7 @@ std::string setup_for_division(std::string& target_number , bool float_setup = f
 
 	size_t r = target_number.size() - 1;
 
-	if (float_setup && float_point_found) {
+	if (float_point_found) {
 
 		// note : only for "float point" numbers !!!
 		// this second filter is like the first but it start from last digit
@@ -924,7 +998,7 @@ std::string setup_for_division(std::string& target_number , bool float_setup = f
 			else {
 
 				if (target_number[r] == '.') {
-					r += 1;
+					r -= 1;
 				}
 
 				break;
