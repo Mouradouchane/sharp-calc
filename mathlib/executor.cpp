@@ -62,13 +62,13 @@
 #define MAX_DIVISION_LOOP 128
 
 // main functions
-std::string execute(node* target_node);
-std::string add( std::string& number1, std::string& number2 , bool );
-std::string sub( std::string& number1, std::string& number2 , bool );
-std::string mult(std::string& number1, std::string& number2);
-std::string pow( std::string& number1, std::string& power);
-std::string div( std::string& number1, std::string& number2);
-std::string rem( std::string& number1, std::string& number2);
+std::string execute( node* target_node );
+std::string add(  std::string& number1  , std::string& number2 , bool dont_setup = false );
+std::string sub(  std::string& number1  , std::string& number2 , bool dont_setup = false );
+std::string mult( std::string& number1  , std::string& number2 );
+std::string pow(  std::string& base     , std::string& power );
+std::string div(  std::string& dividend , std::string& _diviser_ , bool catch_reminder = false );
+std::string mod(  std::string& dividend , std::string& _diviser_ );
 
 // assistance functions
 short compare(std::string & number1, std::string & number2 , bool);
@@ -78,7 +78,7 @@ std::string setup_for_div_or_mult(std::string& target_number);
 
 size_t calc_float_position(std::string const& number1, std::string const& number2);
 std::pair<std::string, std::string> how_much_in( std::string& target_number , std::string& used_number);
-void balance_floats(std::string& number1, std::string& number2);
+void balance_floats(std::string& number1, std::string& number2 , size_t* catch_balance_value_for_reminder = nullptr );
 bool still_not_zero(std::string const& target_number);
 
 
@@ -88,7 +88,7 @@ bool still_not_zero(std::string const& target_number);
 */
 
 
-std::string add( std::string &number1 , std::string &number2 , bool dont_setup = false) {
+std::string add( std::string &number1 , std::string &number2 , bool dont_setup ) {
 
 	short number1_type = (number1[0] == '-') ? NEGATIVE_VALUE : (number1[0] == '+') ? POSITIVE_VALUE : UNSPECIFIED_VALUE;
 	short number2_type = (number2[0] == '-') ? NEGATIVE_VALUE : (number2[0] == '+') ? POSITIVE_VALUE : UNSPECIFIED_VALUE;
@@ -206,7 +206,7 @@ std::string add( std::string &number1 , std::string &number2 , bool dont_setup =
 
 
 
-std::string sub( std::string& number1, std::string& number2 , bool dont_setup = false) {
+std::string sub( std::string& number1, std::string& number2 , bool dont_setup ) {
 
 	// specify numbers operators
 	short number1_type = (number1[0] == '-') ? NEGATIVE_VALUE : (number1[0] == '+') ? POSITIVE_VALUE : UNSPECIFIED_VALUE;
@@ -541,7 +541,7 @@ std::string pow( std::string& target_number , std::string& exponent_power ) {
 
 
 // note : number1 divided by number2
-std::string div( std::string& number1, std::string& number2 ) {
+std::string div( std::string& number1, std::string& number2 , bool catch_reminder ) {
 
 	std::string str_result = "";
 	std::pair<std::string, std::string> count_object; // used by "how_much_in" 
@@ -563,7 +563,7 @@ std::string div( std::string& number1, std::string& number2 ) {
 	if (output_sign == 1) str_result += '-';
 
 	/*
-		check if there's any special case like "x/0"...
+		check if there's any special case like "x/0 , x/1 , ..."
 	*/
 
 	// if number / 0 => infinity
@@ -586,9 +586,11 @@ std::string div( std::string& number1, std::string& number2 ) {
 	/*
 		balance the numbers if there's a float
 	*/
+	
+	size_t catch_balance_change_for_reminder_operation = 0;
 
 	if (is_number1_float || is_number2_float) {
-		balance_floats(number, diviser);
+		balance_floats( number , diviser , &catch_balance_change_for_reminder_operation );
 	}
 
 	// division cycle
@@ -606,7 +608,7 @@ std::string div( std::string& number1, std::string& number2 ) {
 		if (r <= number.size()) {
 			chunk = number; // .substr(0, r);
 
-			if (compare(chunk, diviser, true) != NUMBER_2_BIGGER) {
+			if ( compare(chunk, diviser, true) != NUMBER_2_BIGGER ) {
 				goto count_scope;
 			}
 			else {
@@ -614,30 +616,11 @@ std::string div( std::string& number1, std::string& number2 ) {
 				continue;
 			}
 		}
-		/*
-		if (r == number.size()) {
-			chunk = number;
-			round = false;
-
-			count_object = how_much_in(chunk, diviser);
-
-			if (count_object.second == "0") {
-
-
-				str_result += (added_zeros == 0 && !float_point_active) ? "0." : "0";
-				added_zeros += 1;
-				float_point_active = true;
-				chunk += "0";
-
-				goto count_scope;
-			}
-			else {
-				number = chunk;
-				goto sub_scope;
-			}
-		}
-		*/
 		if (r > number.size()) {
+
+			if (catch_reminder) {
+				return number;
+			}
 
 			if (!float_point_active) {
 				str_result += ".";
@@ -671,11 +654,12 @@ std::string div( std::string& number1, std::string& number2 ) {
 
 			if (count_object.second == "0") {
 
-				// if (r == chunk.size()) {
+				if (catch_reminder) {
+					return chunk;
+				}
+
 				chunk += "0";
 				added_zeros += 1;
-
-				//number = chunk;
 
 				if (added_zeros > 1) {
 
@@ -737,17 +721,42 @@ std::string div( std::string& number1, std::string& number2 ) {
 		str_result.insert(1, "0");
 	}
 
+
 	return str_result;
 
 } // end of div function
 
 
 // note this function use div function to preforme reminder operation
-std::string rem( std::string& number1, std::string& number2 ) {
+std::string mod( std::string& dividend, std::string& _diviser_ ) {
 
-	std::string rem_value = "";
+	std::string  value  = setup_for_div_or_mult(dividend);
+	std::string diviser = setup_for_div_or_mult(_diviser_);
 
-	return rem_value;
+	/*
+		filter against the exceptional cases like : "x%1 , 1%x , ..."
+	*/
+	
+	// x % x = 0
+	if (value == diviser) return "0";
+
+	// x % 0 = 0
+	if (diviser == "0" || diviser == "-0" || diviser == "0.0" || diviser == "-0.0") return "0";
+
+	// 0 % x = 0
+	if (value == "0" || value == "-0" || value == "0.0" || value == "-0.0") return "0";
+
+	// x % 1 = 0
+	if (diviser == "1" || diviser == "-1" || diviser == "1.0" || diviser == "-1.0") return "0";
+
+	// small % bigger = small
+	if (compare(value, diviser, true) == NUMBER_2_BIGGER) return value;
+
+	// end of filtering 
+
+	// using divide function to calculate reminder , because it's have all the bases
+	return div(dividend, _diviser_, true);
+
 }
 
 
@@ -1018,7 +1027,7 @@ std::string setup_for_div_or_mult(std::string& target_number) {
 
 // this function used to get rid of float's point and switch numbers to integer's
 // because integer's fit well with long division 
-void balance_floats(std::string& number1, std::string& number2) {
+void balance_floats( std::string& number1 , std::string& number2 , size_t * catch_balance_factor_for_reminder ) {
 
 	long long int n1_float_index = -1;
 	long long int n2_float_index = -1;
@@ -1088,6 +1097,11 @@ void balance_floats(std::string& number1, std::string& number2) {
 
 		process_number.push_back(number2[i]);
 	}
+
+	if (catch_balance_factor_for_reminder != nullptr) {
+		*catch_balance_factor_for_reminder = range_to_balance;
+	}
+
 	for (size_t i = 0; i < range_to_balance; i++) {
 		process_number.push_back('0');
 	}

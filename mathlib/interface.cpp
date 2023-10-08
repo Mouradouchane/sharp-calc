@@ -238,9 +238,8 @@ extern "C" __declspec(dllexport) std::string debug_pow(std::string a, std::strin
 	return pow(a, b);
 }
 
-extern "C" __declspec(dllexport) void debug_setup_numbers(std::string & number1, std::string & number2) {
-
-	setup_for_add_or_sub( number1 , number2 );
+extern "C" __declspec(dllexport) std::string debug_mod(std::string a, std::string b) {
+	return mod(a, b);
 }
 
 #endif
