@@ -70,7 +70,11 @@ static void print_parsed_expression(node& expression_node , size_t tab = 1) {
 	for (size_t i = 1; i <= tab; i++) {
 		std::cout << '\t';
 	}
-	std::cout << names[expression_node.type] << " : " << expression_node.value << '\n';
+	std::cout << names[expression_node.type] << " : " << expression_node.value ;
+	if (expression_node.type == VARIABLE) {
+		std::cout << " = " << get_variable(expression_node.value);
+	}
+	std::cout << '\n';
 
 	if ( expression_node.left  != nullptr ) print_parsed_expression(*expression_node.left , tab + tab);
 
@@ -84,24 +88,40 @@ extern "C" __declspec(dllexport) std::string process_expression(std::string math
 	trim_expression(math_expression);
 
 	// check operator's , brackets in the expression
-	if (check_expression(math_expression) != VALID_MATH_EXPRESSION) return std::string("");
+	if (check_expression(math_expression) != VALID_MATH_EXPRESSION) {
+	
+		#ifdef _DEBUG
+			std::cout << math_expression << " ==> INVALID EXPRESSION \n";
+		#endif
+		
+		return std::string("");
+	}
 
 	// create binary-tree for the expression
 	node root( math_expression );
 
 	// parse the expression
-	if( parse_expression( root ) == UNDEFINED_VALUE_EXCEPTION ) return std::string("");
+	if (parse_expression(root) == UNDEFINED_VALUE_EXCEPTION) {
+		
+		// if expression or tree invalid 
+		#ifdef _DEBUG
+				std::cout << math_expression << " ==> INVALID EXPRESSION \n";
+		#endif
+
+		return std::string("");
+	}
 
 	#ifdef _DEBUG
-		std::cout << "============== PARSE ===============\n";
+		std::cout << "============== PARSE ==================\n";
 		print_parsed_expression(root , 1);
 		std::cout << "============== E N D ==================\n";
 	#endif
 
 	// todo : computer parsed expression
+	std::string str_result = execute(&root);
 
-	// todo : return value
-	return std::string("");
+
+	return str_result;
 
 } // end of process_expression function
 
@@ -111,7 +131,7 @@ extern "C" __declspec(dllexport) std::string get_variable(std::string var_name) 
 
 	std::map<std::string, var>::iterator container = variables.find(var_name);
 
-	return (container != variables.end()) ? container->second.value : std::string("");
+	return (container != variables.end()) ? container->second.value : EMPTY_STRING;
 
 } // end of get_variable function
 
@@ -133,7 +153,7 @@ extern "C" __declspec(dllexport) short create_int(std::string int_name, std::str
 } // end of create_int function
 
 
-extern "C" __declspec(dllexport) short create_float(std::string float_name, std::string float_value ) {
+extern "C" __declspec(dllexport) short create_float( std::string float_name, std::string float_value ) {
 	
 	// remove spaces then check 
 
@@ -239,6 +259,7 @@ extern "C" __declspec(dllexport) std::string debug_pow(std::string a, std::strin
 }
 
 extern "C" __declspec(dllexport) std::string debug_mod(std::string a, std::string b) {
+
 	return mod(a, b);
 }
 

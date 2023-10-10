@@ -51,6 +51,15 @@
 	#include "analysing.cpp"
 #endif
 
+/*
+#ifndef _interface
+	#define _interface
+	#include "interface.cpp"
+#endif
+*/
+
+extern "C" __declspec(dllexport) std::string get_variable(std::string var_name);
+
 #define NEGATIVE_VALUE 0
 #define POSITIVE_VALUE 1 
 #define UNSPECIFIED_VALUE 2
@@ -1180,48 +1189,85 @@ bool still_not_zero(std::string const& target_number) {
 
 std::string execute(node* target_node) {
 
-	//	compute left and right nodes first
+	// compute left and right nodes first
 	std::string left_value  = (target_node->left  != nullptr) ? execute(target_node->left)  : EMPTY_STRING;
 	std::string right_value = (target_node->right != nullptr) ? execute(target_node->right) : EMPTY_STRING;
 
-	// to store final value
-	std::string value = EMPTY_STRING;
+	// to store computed value
+	std::string str_result = EMPTY_STRING;
 	
-	// based on type chose what to do 
+	// decision based on the element type
 	switch (target_node->type) {
 
 		case UNDEFINED : {
-			value = EMPTY_STRING;
+			
+			return EMPTY_STRING;
+
 		} break;
 
 		case OPERATOR : {
 
-			
+			// if empty vs value = value
+			if (left_value  == "#E") return right_value;
+			if (right_value == "#E") return left_value;
+
+			if (target_node->value == "+") {
+				return add(left_value, right_value);
+			}
+
+			if (target_node->value == "-") {
+				return sub(left_value, right_value);
+			}
+
+			if (target_node->value == "*") {
+				return mult(left_value, right_value);
+			}
+
+			if (target_node->value == "/") {
+				return div(left_value, right_value);
+			}
+
+			if (target_node->value == "%") {
+				return mod(left_value, right_value);
+			}
+
+			if (target_node->value == "^") {
+				return pow(left_value, right_value);
+			}
+
 
 		} break;
 
 		case INT : {
-
+			return target_node->value;
 		} break;
 
 		case FLOAT : {
-
+			return target_node->value;
 		} break;
 
 		case VARIABLE : {
 
+			return get_variable( target_node->value );
+
 		} break;
 
+		// todo !!!
 		case FUNCTION : {
 
+			return "0";
+
 		} break;
 
+		// todo !!!
 		case PARAMETER : {
+
+			return "0";
 
 		} break;
 
 	}
 
-	return value;
+	return str_result;
 
 } // end of execute function

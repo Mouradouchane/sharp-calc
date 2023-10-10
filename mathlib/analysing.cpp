@@ -30,9 +30,11 @@ short operator_level(char const& ch) {
 
 		case '+': case '-': return LEVEL_1;
 
-		case '/': case '%': case '*': case '^': return LEVEL_2;
+		case '/': case '%': case '*': return LEVEL_2;
 
-		case '(': case ')': return LEVEL_3;
+		case '^': return LEVEL_3;
+
+		case '(': case ')': return LEVEL_4;
 
 
 		default: return LEVEL_MAX;

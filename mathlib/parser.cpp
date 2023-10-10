@@ -200,13 +200,13 @@ short parse_expression( node& expression_node , func * function = nullptr ) {
 			now we preforme "parse+check" for both new "sub_expressions"
 		*/
 
-		if( expression_node.left  != nullptr ){
+		if( expression_node.left != nullptr ){
 			if (parse_expression(*expression_node.left, function) == UNDEFINED_VALUE_EXCEPTION) {
 				return UNDEFINED_VALUE_EXCEPTION;
 			}
 		}
 
-		if (expression_node.right != nullptr) {
+		if ( expression_node.right != nullptr ) {
 			if (parse_expression(*expression_node.right, function) == UNDEFINED_VALUE_EXCEPTION) {
 				return UNDEFINED_VALUE_EXCEPTION;
 			}
