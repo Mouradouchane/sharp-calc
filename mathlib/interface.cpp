@@ -113,6 +113,8 @@ extern "C" __declspec(dllexport) std::string process_expression(std::string math
 
 	#ifdef _DEBUG
 		std::cout << "============== PARSE ==================\n";
+		std::cout << math_expression << '\n';
+		std::cout << "=======================================\n";
 		print_parsed_expression(root , 1);
 		std::cout << "============== E N D ==================\n";
 	#endif
@@ -134,6 +136,7 @@ extern "C" __declspec(dllexport) std::string get_variable(std::string var_name) 
 	return (container != variables.end()) ? container->second.value : EMPTY_STRING;
 
 } // end of get_variable function
+
 
 extern "C" __declspec(dllexport) short create_int(std::string int_name, std::string int_value ) {
 

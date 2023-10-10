@@ -1255,6 +1255,8 @@ std::string execute(node* target_node) {
 		// todo !!!
 		case FUNCTION : {
 
+
+
 			return "0";
 
 		} break;

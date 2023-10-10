@@ -159,8 +159,8 @@ short parse_expression( node& expression_node , func * function = nullptr ) {
 					1, expression_node.value.length() - 2
 				);
 
-				parse_expression(expression_node , function);
-				return VALID_SUB_EXPRESSION;
+				return parse_expression(expression_node , function);
+				// return VALID_SUB_EXPRESSION;
 			}
 
 		}
