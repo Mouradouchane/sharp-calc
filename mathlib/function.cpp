@@ -38,7 +38,7 @@ public :
 	std::string expression = "";
 	std::vector<std::string> parameters = {};
 
-	node root; // root node for the parsed expression
+	node * root; // root node for the parsed expression
 
 	// constructors
 

@@ -101,25 +101,33 @@ void trim_expression( std::string & math_expression ) {
 
 /*
 	function take a parameters of function "x,y,z,..." and parse them into vector
-	NOTE : function return pointer to *vector in heap*
-*/
-std::vector<std::string>* parse_parameters( std::string & parameters_as_string ) {
 
+	!!!!! WARN !!!! 
+	"HEAP ALLOCATION" returned vector in allocated in the "HEAP" don't forget to "DELETE it"
+*/
+std::vector<std::string>* parse_parameters( std::string & parameters_as_string , bool parse_without_name_check ) {
+
+	// WARN : HEAP ALLOCATION !
 	std::vector<std::string> * parameters = new std::vector<std::string>();
 	
 	size_t s = 0;
 	for (size_t i = 0 ; i < parameters_as_string.size(); i++) {
 
 		if ( parameters_as_string[i] == ',' || i == (parameters_as_string.size() - 1) ) {
+
 			parameters->push_back( 
 				parameters_as_string.substr( s , i-s + (i == (parameters_as_string.size() - 1) ? 1 : 0) )
 			);
 			s = i+1;
 
-			// if parameter name invalid 
-			if ( is_valid_name( *parameters->rbegin() ) == INVALID_NAME ) {
-				delete parameters;
-				return nullptr;
+			if (!parse_without_name_check) {
+
+				// check parameter name if we parse parameters names
+				if ( is_valid_name( *parameters->rbegin() ) == INVALID_NAME ) {
+					delete parameters;
+					return nullptr;
+				}
+
 			}
 
 		}
@@ -221,3 +229,51 @@ short parse_expression( node& expression_node , func * function = nullptr ) {
 
 } // end of parse_expressionn function
 
+
+/*
+	this function take the function call as string => "fn{arg1 , arg2 , arg3 , ....}"
+	and then parse it into tow parts and make it ready for the "execute function" .
+*/
+std::pair<std::string, std::vector<std::string>> parse_function_call( std::string & function_call ) {
+
+	// object to store the parsed function name and it's list of parameters
+	std::pair<std::string, std::vector<std::string>> call_object;
+
+	trim_expression(function_call);
+
+	size_t i = 0;
+	for ( ; i < function_call.size() ; i += 1 ) {
+
+		if (function_call[i] == '{') {
+			i += 1;
+			break;
+		}
+		else {
+			call_object.first.push_back(function_call[i]);
+		}
+
+	}
+
+	std::string parameters_str = "";
+
+	for ( ; i < function_call.size() ; i += 1 ) {
+
+		if (function_call[i] == '}') break;
+		else {
+			parameters_str.push_back(function_call[i]);
+		}
+
+	}
+
+	// HEAP ALLOCTION
+	std::vector<std::string> * parsed_parameters = parse_parameters(parameters_str , true );
+
+	// copy parameters to call_object
+	call_object.second = *parsed_parameters;
+
+	// remove from the heap after we copying to call_object
+	if(parsed_parameters != nullptr) parsed_parameters->~vector();
+
+	return call_object;
+
+} // end of parse_function_call

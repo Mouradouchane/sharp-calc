@@ -51,14 +51,12 @@
 	#include "analysing.cpp"
 #endif
 
-/*
-#ifndef _interface
-	#define _interface
-	#include "interface.cpp"
-#endif
-*/
+
 
 extern "C" __declspec(dllexport) std::string get_variable(std::string var_name);
+extern std::pair<std::string, func> get_function(std::string & function_name);
+extern std::vector<std::string>* parse_parameters(std::string& parameters_as_string , bool parse_without_name_check = false );
+extern std::pair<std::string, std::vector<std::string>> parse_function_call(std::string& function_call);
 
 #define NEGATIVE_VALUE 0
 #define POSITIVE_VALUE 1 
@@ -71,7 +69,8 @@ extern "C" __declspec(dllexport) std::string get_variable(std::string var_name);
 #define MAX_DIVISION_LOOP 128
 
 // main functions
-std::string execute( node* target_node );
+std::string execute( node* target_node , std::map<std::string, std::string>* function_parameters = nullptr);
+
 std::string add(  std::string& number1  , std::string& number2 , bool dont_setup = false );
 std::string sub(  std::string& number1  , std::string& number2 , bool dont_setup = false );
 std::string mult( std::string& number1  , std::string& number2 );
@@ -1187,11 +1186,11 @@ bool still_not_zero(std::string const& target_number) {
 	after parsed to binary-tree
 */
 
-std::string execute(node* target_node) {
+std::string execute( node* target_node , std::map<std::string,std::string>* function_parameters ) {
 
 	// compute left and right nodes first
-	std::string left_value  = (target_node->left  != nullptr) ? execute(target_node->left)  : EMPTY_STRING;
-	std::string right_value = (target_node->right != nullptr) ? execute(target_node->right) : EMPTY_STRING;
+	std::string left_value  = (target_node->left  != nullptr) ? execute(target_node->left , function_parameters) : EMPTY_STRING;
+	std::string right_value = (target_node->right != nullptr) ? execute(target_node->right, function_parameters) : EMPTY_STRING;
 
 	// to store computed value
 	std::string str_result = EMPTY_STRING;
@@ -1208,8 +1207,8 @@ std::string execute(node* target_node) {
 		case OPERATOR : {
 
 			// if empty vs value = value
-			if (left_value  == "#E") return right_value;
-			if (right_value == "#E") return left_value;
+			if (left_value  == EMPTY_STRING) return right_value;
+			if (right_value == EMPTY_STRING) return left_value;
 
 			if (target_node->value == "+") {
 				return add(left_value, right_value);
@@ -1252,19 +1251,54 @@ std::string execute(node* target_node) {
 
 		} break;
 
-		// todo !!!
+
 		case FUNCTION : {
 
+			// parsing this function call into call_object "name , {params...}"
+			std::pair<std::string, std::vector<std::string>> call_object = parse_function_call(target_node->value);
 
+			// try to fetch the function object from "functions map"
+			std::pair<std::string , func> function_object = get_function(call_object.first);
 
-			return "0";
+			// in case function not found
+			if (function_object.first == "") {
+				return EMPTY_STRING;
+			}
+			else {
+
+				// map/save parameters 
+				// param_name : param_value
+				std::map<std::string, std::string> parameters;
+
+				// copy parameter_name , parameters_value
+				for (size_t i = 0; i < function_object.second.parameters.size(); i += 1) {
+
+					parameters.insert(
+						std::pair<std::string, std::string>(
+							function_object.second.parameters[i] , 
+							(i < call_object.second.size()) ? call_object.second[i] : "0"
+						)
+					);
+
+				}
+
+				// call function + pass parameters
+				return execute( &(function_object.second.root) , &parameters );
+				
+			}
 
 		} break;
 
 		// todo !!!
 		case PARAMETER : {
 
-			return "0";
+			if(function_parameters == nullptr) return EMPTY_STRING;
+			else {
+
+				std::map<std::string, std::string>::iterator itr_param = function_parameters->find(target_node->value);
+
+				return (itr_param != function_parameters->end()) ? itr_param->second : EMPTY_STRING;
+			}
 
 		} break;
 

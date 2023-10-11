@@ -180,7 +180,7 @@ extern "C" __declspec(dllexport) short create_function(
 	std::string function_expression 
 ) {
 
-	// check name
+	// trim+check : function name
 	trim_expression(function_name);
 	if (is_valid_name(function_name) == INVALID_NAME) return INVALID_NAME;
 
@@ -189,7 +189,7 @@ extern "C" __declspec(dllexport) short create_function(
 
 	trim_expression(function_parameters);
 	
-	if (function_parameters != "") {
+	if ( function_parameters != "" ) {
 
 		// parse + check parameters
 		std::vector<std::string>* parameters = parse_parameters(function_parameters);
@@ -213,6 +213,7 @@ extern "C" __declspec(dllexport) short create_function(
 	// check operator's , brackets in the function expression
 	if (check_expression(function_expression) != VALID_MATH_EXPRESSION) return INVALID_FUNCTION_DEFINITION;
 
+	new_function_object.expression = function_expression;
 	new_function_object.root = node(function_expression);
 
 	// parse function expression
@@ -227,12 +228,27 @@ extern "C" __declspec(dllexport) short create_function(
 		std::cout << "============== E N D ==================\n";
 	#endif
 
-	functions.insert(std::pair<std::string, func>{ function_name, new_function_object});
+	// insert function object in "functions map"
+	functions.insert(std::pair<std::string, func>{ function_name, new_function_object } );
 
 	return VALID;
 
 } // end of create_function function
 
+
+std::pair<std::string , func> get_function( std::string & function_name ) {
+	
+	// check function name
+	trim_expression(function_name);
+
+	return *( functions.find(function_name) );
+
+} // end of get_function
+
+
+/*
+	 a few functions for debug/testing
+*/
 
 #ifdef _DEBUG
 
