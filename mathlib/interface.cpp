@@ -140,16 +140,38 @@ extern "C" __declspec(dllexport) std::string get_variable(std::string var_name) 
 
 extern "C" __declspec(dllexport) short create_int(std::string int_name, std::string int_value ) {
 
-	// remove spaces then check 
+	// trim name and value + few checks
 
 	trim_expression(int_name);
+
 	if ( is_valid_name(int_name) == INVALID_NAME ) return INVALID_NAME;
 
 	trim_expression(int_value);
+
 	if ( is_int(int_value) == INVALID_VALUE ) return INVALID_VALUE;
 
-	// if "name" and "value" ==> correct
-	variables.insert(std::pair<std::string, var> { int_name , var(int_name, int_value, (int_value[0] == '-') ? _INT_ : _UINT_ ) });
+	// make sure that there's no '+' operator
+	if (int_value[0] == '+') int_value = int_value.substr(1, int_value.size());
+
+	// try to find if the variable is already in the map
+	std::map<std::string, var>::iterator variable = variables.find(int_name);
+
+	// in case the variable is found 
+	// just update the value and it's type
+	if ( variable != variables.end() ) {
+	
+		variable->second.value = int_value;
+		variable->second.type  = (int_value[0] == '-') ? _INT_ : _UINT_ ;
+		
+	}
+	else { // store it directly in "variables map"
+
+		variables.insert(
+			std::pair<std::string, var> { 
+			int_name , var(int_name, int_value, (int_value[0] == '-') ? _INT_ : _UINT_ ) 
+		});
+
+	}
 
 	return VALID;
 
@@ -158,16 +180,38 @@ extern "C" __declspec(dllexport) short create_int(std::string int_name, std::str
 
 extern "C" __declspec(dllexport) short create_float( std::string float_name, std::string float_value ) {
 	
-	// remove spaces then check 
+	// trim name and value + few checks
 
 	trim_expression(float_name);
+
 	if( is_valid_name(float_name) == INVALID_NAME ) return INVALID_NAME;
 
 	trim_expression(float_value);
+
 	if ( is_float(float_value) == INVALID_VALUE ) return INVALID_VALUE;
 
-	// if "name" and "value" ==> correct
-	variables.insert(std::pair<std::string, var> { float_name, var(float_name, float_value, (float_value[0] == '-') ? _FLOAT_ : _UFLOAT_ ) });
+	// make sure that there's no '+' operator
+	if (float_value[0] == '+') float_value = float_value.substr(1, float_value.size());
+
+	// try to find if the variable is already in the map
+	std::map<std::string, var>::iterator variable = variables.find(float_name);
+
+	// in case the variable is found 
+	// just update the value and it's type
+	if (variable != variables.end()) {
+
+		variable->second.value = float_value;
+		variable->second.type = (float_value[0] == '-') ? _FLOAT_ : _UFLOAT_ ;
+
+	}
+	else { // store it directly in "variables map"
+
+		variables.insert(
+			std::pair<std::string, var> { 
+			float_name, var(float_name, float_value, (float_value[0] == '-') ? _FLOAT_ : _UFLOAT_ ) 
+		});
+
+	}
 
 	return VALID;
 
@@ -180,13 +224,14 @@ extern "C" __declspec(dllexport) short create_function(
 	std::string function_expression 
 ) {
 
-	// trim+check : function name
+	// trim + check : function name
 	trim_expression(function_name);
 	if (is_valid_name(function_name) == INVALID_NAME) return INVALID_NAME;
 
 	func new_function_object;
 	new_function_object.name = function_name;
 
+	// process parameters
 	trim_expression(function_parameters);
 	
 	if ( function_parameters != "" ) {
@@ -199,10 +244,12 @@ extern "C" __declspec(dllexport) short create_function(
 		// copy parameters 
 		new_function_object.parameters = *parameters;
 
+		/*
 		// sort parameters 
 		std::sort(
 			new_function_object.parameters.begin(), new_function_object.parameters.end()
 		);
+		*/
 
 		delete parameters;
 	}
@@ -214,17 +261,17 @@ extern "C" __declspec(dllexport) short create_function(
 	if (check_expression(function_expression) != VALID_MATH_EXPRESSION) return INVALID_FUNCTION_DEFINITION;
 
 	new_function_object.expression = function_expression;
-	new_function_object.root = node(function_expression);
+	new_function_object.root = new node(function_expression); // HEAP ALLOCATION !
 
 	// parse function expression
-	if (parse_expression(new_function_object.root, &new_function_object) == UNDEFINED_VALUE_EXCEPTION) {
+	if (parse_expression(*(new_function_object.root), &new_function_object) == UNDEFINED_VALUE_EXCEPTION) {
 		return UNDEFINED_VALUE_EXCEPTION;
 	}
 
 	#ifdef _DEBUG
 		std::cout << "============== PARSE ===============\n";
 		std::cout << new_function_object.name << '{' << function_parameters << "}\n";
-		print_parsed_expression(new_function_object.root, 1);
+		print_parsed_expression(*(new_function_object.root), 1);
 		std::cout << "============== E N D ==================\n";
 	#endif
 

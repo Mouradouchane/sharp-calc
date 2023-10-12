@@ -1283,7 +1283,7 @@ std::string execute( node* target_node , std::map<std::string,std::string>* func
 				}
 
 				// call function + pass parameters
-				return execute( &(function_object.second.root) , &parameters );
+				return execute( function_object.second.root , &parameters );
 				
 			}
 

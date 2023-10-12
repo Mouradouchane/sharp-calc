@@ -53,8 +53,10 @@ static short define_this(std::string const& undefined_value , func * function = 
 
 	if (function != nullptr) {
 
-		if (std::binary_search(function->parameters.begin(), function->parameters.end(), undefined_value)) {
-			return PARAMETER;
+		for (size_t i = 0; i < function->parameters.size(); i += 1) {
+
+			if (function->parameters[i] == undefined_value) return PARAMETER;
+
 		}
 
 	}
