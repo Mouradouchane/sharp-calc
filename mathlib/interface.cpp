@@ -244,13 +244,6 @@ extern "C" __declspec(dllexport) short create_function(
 		// copy parameters 
 		new_function_object.parameters = *parameters;
 
-		/*
-		// sort parameters 
-		std::sort(
-			new_function_object.parameters.begin(), new_function_object.parameters.end()
-		);
-		*/
-
 		delete parameters;
 	}
 
@@ -268,15 +261,24 @@ extern "C" __declspec(dllexport) short create_function(
 		return UNDEFINED_VALUE_EXCEPTION;
 	}
 
+	// if this function is already on the "functions map" , just replace it 
+	std::map<std::string, func>::iterator function_object_iterator = functions.find(function_name);
+
+	if (function_object_iterator != functions.end()) { 
+		// replace it
+		function_object_iterator->second = new_function_object;
+	}
+	else {
+		// insert/add function object in "functions map"
+		functions.insert(std::pair<std::string, func>{ function_name, new_function_object } );
+	}
+
 	#ifdef _DEBUG
 		std::cout << "============== PARSE ===============\n";
 		std::cout << new_function_object.name << '{' << function_parameters << "}\n";
 		print_parsed_expression(*(new_function_object.root), 1);
 		std::cout << "============== E N D ==================\n";
 	#endif
-
-	// insert function object in "functions map"
-	functions.insert(std::pair<std::string, func>{ function_name, new_function_object } );
 
 	return VALID;
 
