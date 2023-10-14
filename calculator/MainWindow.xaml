@@ -39,7 +39,17 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="40"
+            Grid.Column="1" Grid.Row="10"
+            Content="."
+            Click="FloatPoint_Button_OnClick" 
+        />
+        
         <Button 
             FontFamily="{StaticResource NumbersButtonsFontFamily}"
             FontSize="{StaticResource NumbersButtonsFontSize}" 
@@ -48,6 +58,7 @@
             Height="40"
             Grid.Column="0" Grid.Row="10"
             Content="0"
+            Click="N0_Button_OnClick" 
         />
 
         <Button 
@@ -58,6 +69,7 @@
             Height="40"
             Grid.Column="0" Grid.Row="9"
             Content="1"
+            Click="N1_Button_OnClick" 
         />
 
         <Button 
@@ -68,7 +80,325 @@
             Height="40"
             Grid.Column="1" Grid.Row="9"
             Content="2"
+            Click="N2_Button_OnClick" 
+            
         />
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="40"
+            Grid.Column="2" Grid.Row="9"
+            Content="3"
+            Click="N3_Button_OnClick" 
+        />
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="40"
+            Grid.Column="0" Grid.Row="8"
+            Content="4"
+            Click="N4_Button_OnClick" 
+        />
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="40"
+            Grid.Column="1" Grid.Row="8"
+            Content="5"
+            Click="N5_Button_OnClick" 
+        />
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="40"
+            Grid.Column="2" Grid.Row="8"
+            Content="6"
+            Click="N6_Button_OnClick" 
+        />
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="40"
+            Grid.Column="0" Grid.Row="7"
+            Content="7"
+            Click="N7_Button_OnClick" 
+        />
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="40"
+            Grid.Column="1" Grid.Row="7"
+            Content="8"
+            Click="N8_Button_OnClick" 
+        />
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="40"
+            Grid.Column="2" Grid.Row="7"
+            Content="9"
+            Click="N9_Button_OnClick" 
+        />
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="40"
+            Grid.Column="3" Grid.Row="7"
+            Content="("
+            Click="BracketOpen_Button_OnClick" 
+        />
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="40"
+            Grid.Column="4" Grid.Row="7"
+            Content=")"
+            Click="BracketClose_Button_OnClick" 
+        />
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Background="{StaticResource ValuesButtonsColor}"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="40"
+            Grid.Column="3" Grid.Row="9"
+            Content="E"
+            Click="Euler_Button_OnClick" 
+        />
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Background="{StaticResource ValuesButtonsColor}"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="40"
+            Grid.Column="4" Grid.Row="9"
+            Content="PI"
+            Click="Pi_Button_OnClick" 
+        />
+        
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="40"
+            Grid.Column="3" Grid.Row="8"
+            Content="{StaticResource BracketOpenChar}"
+            Click="FunctionBracket_OpenButton_OnClick" 
+        />
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="40"
+            Grid.Column="4" Grid.Row="8"
+            Content='}'
+            Click="FunctionBracket_CloseButton_OnClick" 
+        />
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Background="{StaticResource OperatorsButtonsColor}"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="40"
+            Grid.Column="2" Grid.Row="10"
+            Content='+'
+            Click="OperatorPlus_Button_OnClick" 
+        />
+
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Background="{StaticResource OperatorsButtonsColor}"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="40"
+            Grid.Column="3" Grid.Row="10"
+            Content='-'
+            Click="OperatorMinus_Button_OnClick" 
+        />
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Background="{StaticResource OperatorsButtonsColor}"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="40"
+            Grid.Column="4" Grid.Row="10"
+            Content='*'
+            Click="OperatorMultiplay_Button_OnClick" 
+        />
+        
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Background="{StaticResource OperatorsButtonsColor}"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="40"
+            Grid.Column="5" Grid.Row="10"
+            Content='/'
+            Click="OperatorDivision_Button_OnClick" 
+        />
+
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Background="{StaticResource OperatorsButtonsColor}"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="40"
+            Grid.Column="6" Grid.Row="10"
+            Content='%'
+            Click="OperatorMod_Button_OnClick" 
+        />
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Background="{StaticResource OperatorsButtonsColor}"
+            Width="{StaticResource EdgeButtonsWidth}" 
+            Height="40"
+            Grid.Column="7" Grid.Row="10"
+            Content='^'
+            Click="OperatorPower_Button_OnClick" 
+        />
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Background="{StaticResource FunctionsButtonsColor}"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="40"
+            Grid.Column="5" Grid.Row="7"
+            Content="C"
+            Click="Clear_Button_OnClick" 
+        />
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Background="{StaticResource FunctionsButtonsColor}"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="40"
+            Grid.Column="6" Grid.Row="7"
+            Content="CLEAR"
+            Click="ClearAll_Button_OnClick" 
+        />
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Background="{StaticResource FunctionsButtonsColor}"
+            Width="{StaticResource NumbersButtonsWidth}" 
+            Height="auto"
+            Margin="10"
+            Grid.Column="7" Grid.Row="7"
+            Grid.RowSpan="3"
+            Content="="
+            Click="ClearAll_Button_OnClick" 
+        />
+
+        <Label
+            Width="auto"
+            Height="auto"
+            Background="AliceBlue"
+            Grid.Column="0" 
+            Grid.Row="0"
+            Grid.RowSpan="6"
+            Grid.ColumnSpan="8"
+            Margin="10"
+        >
+
+            
+        </Label>
+
+        
+
+        <TextBlock 
+            Grid.Row="6"
+            Margin="10,10,0,0"
+            Text="function"
+            FontSize="20"
+            FontWeight="Bold"
+            Foreground="white"
+        />
+
+        <TextBlock 
+            Grid.Column="4" 
+            Grid.Row="6"
+            Text=" variable"
+            FontWeight="Bold"
+            Foreground="white"
+            Margin="10,10,0,0"
+            FontSize="20"
+                
+        />
+            
+
+        <TextBox
+            Grid.Column="1"
+            Grid.ColumnSpan="3"
+            Grid.Row="6"  
+            Margin="0,6,0,6"
+            FontSize="20"
+            
+        >
+            
+        </TextBox>
+
+
+        <TextBox
+            Grid.Column="5"
+            Grid.ColumnSpan="3"
+            Grid.Row="6"  
+            Margin="0,6,10,6"
+            FontSize="20"
+        >
+
+        </TextBox>
 
     </Grid>
 

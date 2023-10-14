@@ -8,15 +8,21 @@
         
         <ResourceDictionary>
             <SolidColorBrush x:Key="MainWindowBackgroudColor" Color="Black" />
+            <SolidColorBrush x:Key="OperatorsButtonsColor" Color="cyan" />
+            <SolidColorBrush x:Key="ValuesButtonsColor" Color="pink" />
+            <SolidColorBrush x:Key="FunctionsButtonsColor" Color="OrangeRed" />
 
             <GridLength x:Key="RowSize">50</GridLength>
             <GridLength x:Key="ColumnSize">100</GridLength>
 
-
             <System:Double x:Key="NumbersButtonsFontSize">20</System:Double>
             <System:Double x:Key="NumbersButtonsWidth">80</System:Double>
-            <FontFamily x:Key="NumbersButtonsFontFamily">Segoe UI </FontFamily>
+            <System:Double x:Key="EdgeButtonsWidth">60</System:Double>
+            <FontFamily x:Key="NumbersButtonsFontFamily">Segoe UI</FontFamily>
 
+
+            <System:Char x:Key="BracketOpenChar">{</System:Char>
+            
         </ResourceDictionary>
 
     </Application.Resources>
