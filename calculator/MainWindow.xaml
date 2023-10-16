@@ -315,6 +315,36 @@
             Click="Clear_Button_OnClick" 
         />
 
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Background="{StaticResource LoadSaveButtonsColor}"
+            Width="auto" 
+            Height="40"
+            Grid.Column="5" Grid.Row="8"
+            Grid.ColumnSpan="2"
+            Content="LOAD"
+            Click="Load_Button_OnClick"
+            Margin="10,0,10,0"
+        />
+
+        <Button 
+            FontFamily="{StaticResource NumbersButtonsFontFamily}"
+            FontSize="{StaticResource NumbersButtonsFontSize}" 
+            FontWeight="Bold"
+            Background="{StaticResource LoadSaveButtonsColor}"
+            Width="auto" 
+            Height="40"
+            Grid.Column="5" Grid.Row="9"
+            Grid.ColumnSpan="2"
+            Content="SAVE"
+            Click="Save_Button_OnClick" 
+            Margin="10,0,10,0"
+        />
+
+        
         <Button 
             FontFamily="{StaticResource NumbersButtonsFontFamily}"
             FontSize="{StaticResource NumbersButtonsFontSize}" 
@@ -331,20 +361,22 @@
             FontFamily="{StaticResource NumbersButtonsFontFamily}"
             FontSize="{StaticResource NumbersButtonsFontSize}" 
             FontWeight="Bold"
-            Background="{StaticResource FunctionsButtonsColor}"
+            Background="LightGreen"
             Width="{StaticResource NumbersButtonsWidth}" 
             Height="auto"
             Margin="10"
             Grid.Column="7" Grid.Row="7"
             Grid.RowSpan="3"
-            Content="="
-            Click="ClearAll_Button_OnClick" 
+            Content="= "
+            Click="Equal_Button_OnClick" 
         />
 
         <Label
+            BorderThickness="2"
+            BorderBrush="white"
             Width="auto"
             Height="auto"
-            Background="AliceBlue"
+            Background="Transparent"
             Grid.Column="0" 
             Grid.Row="0"
             Grid.RowSpan="6"
@@ -352,7 +384,33 @@
             Margin="10"
         >
 
-            
+            <Label
+                Width="auto"
+                Height="200"
+                Background="Gray"
+                Grid.Column="0" 
+                Grid.Row="0"
+                Grid.RowSpan="6"
+                
+            >
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="750"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                </Grid>
+                
+            </Label>
+
+          
         </Label>
 
         

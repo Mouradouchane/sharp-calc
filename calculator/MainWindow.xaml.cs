@@ -19,14 +19,14 @@ namespace calculator
     public partial class MainWindow : Window
     {
 
-        public class TextBox : Control
-        {
-            
-        }
-
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        public void LogMessage(string message)
+        {
+            MessageBox.Show(message);
         }
 
         public void AddNumberToExpression( int value )
@@ -167,13 +167,28 @@ namespace calculator
 
         private void Clear_Button_OnClick(object sender, RoutedEventArgs e)
         {
-
+            LogMessage("Clear button clicked");
         }
 
         private void ClearAll_Button_OnClick(object sender, RoutedEventArgs e)
         {
+            LogMessage("Clear All button clicked");
+        }
+
+        private void Save_Button_OnClick(object sender, RoutedEventArgs e)
+        {
+            LogMessage("Save button clicked");
+
+        }
+        private void Load_Button_OnClick(object sender, RoutedEventArgs e)
+        {
+            LogMessage("Load button clicked");
 
         }
 
+        private void Equal_Button_OnClick(object sender, RoutedEventArgs e)
+        {
+            LogMessage("Equal button clicked");
+        }
     }
 }

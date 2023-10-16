@@ -11,6 +11,7 @@
             <SolidColorBrush x:Key="OperatorsButtonsColor" Color="cyan" />
             <SolidColorBrush x:Key="ValuesButtonsColor" Color="pink" />
             <SolidColorBrush x:Key="FunctionsButtonsColor" Color="OrangeRed" />
+            <SolidColorBrush x:Key="LoadSaveButtonsColor" Color="Gold" />
 
             <GridLength x:Key="RowSize">50</GridLength>
             <GridLength x:Key="ColumnSize">100</GridLength>
