@@ -58,7 +58,7 @@ namespace calculator {
             
             #line default
             #line hidden
-            System.Uri resourceLocater = new System.Uri("/calculator;component/app.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/HeavyCalc;component/app.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\App.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
