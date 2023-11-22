@@ -294,8 +294,7 @@
             FontFamily="{StaticResource NumbersButtonsFontFamily}"
             FontSize="{StaticResource NumbersButtonsFontSize}" 
             FontWeight="Bold"
-            Background="{StaticResource OperatorsButtonsColor}" 
-            Height="40"
+            Background="{StaticResource OperatorsButtonsColor}"
             Grid.Column="7" Grid.Row="10"
             Content='^'
             Click="OperatorPower_Button_OnClick" Margin="10,16,10,15" 
@@ -373,22 +372,30 @@
             Name="HistoryList" 
             BorderThickness="1"
             BorderBrush="white"
-            Width="794"
-            Height="245"
+            Width="784"
             Background="#242424"
             Grid.Column="0" 
             Grid.Row="0"
             Grid.RowSpan="5"
             Grid.ColumnSpan="8"
-            Margin="0,0,0,0"
             HorizontalAlignment="Left" 
-            VerticalAlignment="Top"
+            Margin="0,0,0,2" 
+             VerticalContentAlignment="Top"  
+          ScrollViewer.VerticalScrollBarVisibility="Disabled"
         >
 
+            <TextBlock 
+                Grid.Row="0" Grid.Column="0" 
+                Text="text 1" 
+                Width="764" Height="28"
+                Foreground="White"
+                FontSize="20"
+            />
 
         </ListView>
 
         <TextBox
+            x:Name="Expressions_input"
             Margin="0,10,10,0"
             Text=""
             FontSize="20"
@@ -397,7 +404,10 @@
             Background="white"
             Grid.Column="1"
             Grid.Row="5"
-            Grid.ColumnSpan="7"
+            Grid.ColumnSpan="7" 
+            Tag="0"
+            PreviewMouseDown="SetActiveInput"
+             
         />
 
         <TextBlock 
@@ -417,7 +427,7 @@
             Foreground="white"
             TextAlignment="Center"
         />
-        
+
         <TextBlock 
             Grid.Column="4" 
             Grid.Row="6"
@@ -431,23 +441,28 @@
 
 
         <TextBox
+            x:Name="Functions_input"
             Grid.Column="1"
             Grid.ColumnSpan="3"
             Grid.Row="6"  
             Margin="0,6,10,6"
             FontSize="20"
-            
+            Tag="1"
+            PreviewMouseDown="SetActiveInput"
         >
 
         </TextBox>
 
 
         <TextBox
+            x:Name="Variables_input"
             Grid.Column="5"
             Grid.ColumnSpan="3"
             Grid.Row="6"  
             Margin="0,6,10,6"
             FontSize="20"
+            Tag="2"
+            PreviewMouseDown="SetActiveInput"
         >
 
         </TextBox>
