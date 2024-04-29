@@ -1,2 +1,3 @@
 # sharpCalc :
-### a calculator with normal-mode and programmer-mode that use C# GUI and C++ for math
+### i start this calculator project to learn how to use C++ code in DLL from C# applicaiton , currently 90% of it done .
+
